@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"vk-photo-storage/internal/delivery/http"
 	"vk-photo-storage/internal/infrastructure"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,8 @@ func main() {
 	}
 
 	router := gin.Default()
+
+	http.NewPageHandler(router)
 
 	if err := router.Run(cfg.Server.Port); err != nil {
 		log.Fatalf("Ошибка запуска сервера: %v", err)
