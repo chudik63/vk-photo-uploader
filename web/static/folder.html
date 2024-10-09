@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VK Photo uploader</title>
+    <link rel='stylesheet' href='styles.css'>
+</head>
+<body>
+
+<label for="file-input">Select Folder</label>
+<input type="file" id="file-input" webkitdirectory directory />
+
+<div class="output" id="output">
+    <h2>Selected Folder:</h2>
+    <p id="folder-path"></p>
+</div>
+
+<script>
+    document.getElementById('file-input').addEventListener('change', function(event) {
+        const files = event.target.files;
+        const folderPath = files.length > 0 ? files[0].webkitRelativePath.split('/')[0] : '';
+        console.log(files)
+        document.getElementById('folder-path').innerText = folderPath;
+        document.getElementById('output').style.display = 'block';
+
+        fetch('/select', {
+            method: 'POST',
+            body: JSON.stringify({
+                folder_path: folderPath
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+
+</body>
+</html>
