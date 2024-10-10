@@ -30,7 +30,6 @@ func NewPageHandler(router *gin.Engine) {
 	router.GET("/folder", handler.RunFolder)
 
 	router.POST("/register", handler.Register)
-	router.POST("/select", handler.Select)
 }
 
 func (h *PageHandler) RunIndex(c *gin.Context) {
@@ -48,14 +47,4 @@ func (u *PageHandler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-}
-
-func (u *PageHandler) Select(c *gin.Context) {
-	var path entity.Path
-	if err := c.ShouldBindJSON(&path); err != nil {
-		log.Print(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	log.Print(path.Path)
 }

@@ -1,9 +1,15 @@
 package entity
 
+import (
+	"mime/multipart"
+	"time"
+)
+
 type Photo struct {
-	Name         string `json:"name"`
-	Path         string `json:"path"`
-	Size         uint64 `json:"size"`
-	Type         string `json:"type"`
-	LastModified uint64 `json:"lastmodified"`
+	File         multipart.File
+	Name         string
+	Path         string
+	Size         uint64
+	Type         string
+	LastModified time.Time
 }
