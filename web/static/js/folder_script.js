@@ -14,7 +14,7 @@ document.getElementById('file-input').addEventListener('change', async function(
             
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('path', file.path);
+            formData.append('path', file.webkitRelativePath);
             formData.append('lastModified', file.lastModified); 
 
             try {
@@ -27,16 +27,16 @@ document.getElementById('file-input').addEventListener('change', async function(
                     const jsonResponse = await response.json();
 
                     const fileItem = document.createElement('div');
-                    fileItem.textContent = `${formData.name} - Uploaded`;
+                    fileItem.textContent = `${formData.path} - Загружен`;
                     fileListElement.appendChild(fileItem);
 
                     uploadedFiles++;
                     progressBarElement.style.width = `${(uploadedFiles / files.length) * 100}%`;
                 } else {
-                    console.error(`Failed to upload ${formData.name}`);
+                    console.error(`Failed to upload ${file.name}`);
                 }
             } catch (error) {
-                console.error(`Error uploading file: ${formData.name}`, error);
+                console.error(`Error uploading file: ${file.name}`, error);
             }
         }
     }
