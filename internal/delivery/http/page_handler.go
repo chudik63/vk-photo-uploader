@@ -1,9 +1,7 @@
 package http
 
 import (
-	"log"
 	"net/http"
-	"vk-photo-uploader/internal/entity"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,8 +26,6 @@ func NewPageHandler(router *gin.Engine) {
 
 	router.GET("/", handler.RunIndex)
 	router.GET("/folder", handler.RunFolder)
-
-	router.POST("/register", handler.Register)
 }
 
 func (h *PageHandler) RunIndex(c *gin.Context) {
@@ -38,13 +34,4 @@ func (h *PageHandler) RunIndex(c *gin.Context) {
 
 func (h *PageHandler) RunFolder(c *gin.Context) {
 	c.HTML(http.StatusOK, h.folderPage, gin.H{})
-}
-
-func (u *PageHandler) Register(c *gin.Context) {
-	var user entity.User
-	if err := c.ShouldBindJSON(&user); err != nil {
-		log.Print(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
 }
