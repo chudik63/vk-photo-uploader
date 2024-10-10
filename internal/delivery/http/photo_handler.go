@@ -19,12 +19,11 @@ func NewPhotoHandler(router *gin.Engine, photoService service.PhotoService) {
 	handler := &PhotoHandler{
 		photoService: photoService,
 	}
-	_ = handler
 
-	router.POST("/upload", handler.Upload)
+	router.POST("/upload", handler.UploadPhoto)
 }
 
-func (p *PhotoHandler) Upload(c *gin.Context) {
+func (p *PhotoHandler) UploadPhoto(c *gin.Context) {
 	lastModifiedStr := c.PostForm("lastModified")
 
 	lastModified, err := strconv.ParseInt(lastModifiedStr, 10, 64)
@@ -40,41 +39,18 @@ func (p *PhotoHandler) Upload(c *gin.Context) {
 	}
 	defer file.Close()
 
-	size, err := strconv.ParseUint(c.PostForm("size"), 10, 64)
-	if err != nil {
-		log.Print(err)
-	}
-
 	photo := &entity.Photo{
 		File:         file,
-		Name:         c.PostForm("name"),
+		Name:         header.Filename,
 		Path:         c.PostForm("path"),
-		Size:         size,
-		Type:         c.PostForm("type"),
+		Size:         header.Size,
 		LastModified: modTime,
 	}
 
-	_, _ = photo, header
+	if err := p.photoService.UploadPhoto(photo); err != nil {
+		log.Print(err)
+		return
+	}
 
-	// savePath := "./uploads/"
-	// err = os.MkdirAll(savePath, os.ModePerm)
-	// if err != nil {
-	// 	c.String(http.StatusInternalServerError, "Error creating directory")
-	// 	return
-	// }
-
-	// dst, err := os.Create(filepath.Join(savePath, header.Filename))
-	// if err != nil {
-	// 	c.String(http.StatusInternalServerError, "Error creating file")
-	// 	return
-	// }
-	// defer dst.Close()
-
-	// if _, err := io.Copy(dst, file); err != nil {
-	// 	c.String(http.StatusInternalServerError, "Error saving file")
-	// 	return
-	// }
-
-	// if ok c.JSON(http.StatusOK, gin.H{})
-
+	c.JSON(http.StatusOK, gin.H{})
 }

@@ -9,7 +9,6 @@ type Photo struct {
 	File         multipart.File
 	Name         string
 	Path         string
-	Size         uint64
-	Type         string
+	Size         int64
 	LastModified time.Time
 }
