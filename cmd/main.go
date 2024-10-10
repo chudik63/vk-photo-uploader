@@ -2,8 +2,8 @@ package main
 
 import (
 	"log"
-	"vk-photo-storage/internal/delivery/http"
-	"vk-photo-storage/internal/infrastructure"
+	"vk-photo-uploader/internal/delivery/http"
+	"vk-photo-uploader/internal/infrastructure"
 
 	"github.com/gin-gonic/gin"
 )

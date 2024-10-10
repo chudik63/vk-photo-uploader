@@ -1,38 +1,36 @@
 package http
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"vk-photo-storage/internal/entity"
+	"vk-photo-uploader/internal/entity"
 
 	"github.com/gin-gonic/gin"
 )
 
 type PageHandler struct {
-	root       string
-	indexPage  string
-	folderPage string
+	staticFolder    string
+	templatesFolder string
+	indexPage       string
+	folderPage      string
 }
 
 func NewPageHandler(router *gin.Engine) {
 	handler := &PageHandler{
-		root:       "../web/static/",
-		indexPage:  "index.html",
-		folderPage: "folder.html",
+		staticFolder:    "../web/static",
+		templatesFolder: "../web/templates",
+		indexPage:       "index.html",
+		folderPage:      "folder.html",
 	}
 
-	handler.SetRoot(router)
+	router.LoadHTMLGlob(handler.templatesFolder + "/*.html")
+	router.Static("/static", handler.staticFolder)
 
 	router.GET("/", handler.RunIndex)
 	router.GET("/folder", handler.RunFolder)
 
 	router.POST("/register", handler.Register)
 	router.POST("/select", handler.Select)
-}
-
-func (h *PageHandler) SetRoot(r *gin.Engine) {
-	r.LoadHTMLGlob(fmt.Sprintf("%s*", h.root))
 }
 
 func (h *PageHandler) RunIndex(c *gin.Context) {
