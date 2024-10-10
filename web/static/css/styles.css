@@ -9,11 +9,52 @@ html, body {
     background-color: #2e2e2e; 
 }
 
-.vk-auth-container {
-    width: 25%;
-    height: 5%;  
-    margin: 0 auto;    
-    vertical-align: center;              
-    border-radius: 10px;           
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    color: white;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+.custom-button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #3b3b3b;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.custom-button:hover {
+    background-color: #979797;
+}
+
+#progress-bar-container {
+    width: 100%;
+    background-color: #e0e0e0;
+    margin-top: 20px;
+    border-radius: 25px;
+}
+
+#progress-bar {
+    width: 0;
+    height: 20px;
+    background-color: #4CAF50;
+    border-radius: 25px;
+}
+
+#file-list {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+#folder-path {
+    text-align: center;
 }
