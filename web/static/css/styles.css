@@ -1,0 +1,19 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    display: inline-flex;             
+    justify-content: center;   
+    align-items: center;  
+     
+    background-color: #2e2e2e; 
+}
+
+.vk-auth-container {
+    width: 25%;
+    height: 5%;  
+    margin: 0 auto;    
+    vertical-align: center;              
+    border-radius: 10px;           
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
