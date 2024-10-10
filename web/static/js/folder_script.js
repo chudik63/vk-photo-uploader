@@ -11,36 +11,35 @@ document.getElementById('file-input').addEventListener('change', async function(
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-
-            const fileMetadata = {
-                name: file.name,
-                path: file.webkitRelativePath,
-                size: file.size,
-                type: file.type,
-                lastModified: file.lastModified
-            };
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('path', file.path);
+            formData.append('lastModified', file.lastModified); 
 
             try {
                 const response = await fetch('/upload', {
                     method: 'POST',
-                    body: JSON.stringify(fileMetadata)
+                    body: formData
                 });
-
+                
                 if (response.ok) {
                     const jsonResponse = await response.json();
 
                     const fileItem = document.createElement('div');
-                    fileItem.textContent = `${fileMetadata.name} - Uploaded`;
+                    fileItem.textContent = `${formData.name} - Uploaded`;
                     fileListElement.appendChild(fileItem);
 
                     uploadedFiles++;
                     progressBarElement.style.width = `${(uploadedFiles / files.length) * 100}%`;
                 } else {
-                    console.error(`Failed to upload ${fileMetadata.name}`);
+                    console.error(`Failed to upload ${formData.name}`);
                 }
             } catch (error) {
-                console.error(`Error uploading file: ${fileMetadata.name}`, error);
+                console.error(`Error uploading file: ${formData.name}`, error);
             }
         }
     }
 });
+
+
