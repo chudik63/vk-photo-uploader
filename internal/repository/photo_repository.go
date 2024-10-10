@@ -23,11 +23,13 @@ func NewPhotoRepository(path string) PhotoRepository {
 }
 
 func (r *photoRepository) Upload(photo *entity.Photo) error {
-	if err := os.MkdirAll(r.path, os.ModePerm); err != nil {
+	dir := filepath.Join(r.path, filepath.Dir(photo.Path))
+
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return errors.New("ошибка создания директории")
 	}
 
-	dst, err := os.Create(filepath.Join(r.path, photo.Name))
+	dst, err := os.Create(filepath.Join(dir, photo.Name))
 	if err != nil {
 		return errors.New("ошибка создания файла")
 	}
