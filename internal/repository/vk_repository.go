@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type VkRepository struct {
@@ -34,13 +35,11 @@ type postUrlResponse struct {
 	Server      int    `json:"server"`
 	Photos_list string `json:"photos_list"`
 	Aid         int    `json:"aid"`
-	Hash        string `json:"string"`
+	Hash        string `json:"hash"`
 }
 
 type savePhotoResponse struct {
-	Response struct {
-		Album_id int `json:"album_id"`
-	} `json:"response"`
+	Response []interface{} `json:"response"`
 }
 
 func NewVkRepository(path string) VkRepository {
@@ -59,32 +58,39 @@ func (r *VkRepository) Upload(path string) error {
 		return err
 	}
 
-	log.Print(id)
-
 	upload_url, err := r.getUploadServer(id)
 	if err != nil {
 		return err
 	}
 
 	wholePath, _ := os.Getwd()
-	wholePath = filepath.Join(wholePath, r.root+path)
+	wholePath = filepath.Join(wholePath, r.root, path)
+
+	ext := filepath.Ext(wholePath)
+	wholePathWithoutExt := strings.TrimSuffix(wholePath, ext)
+
+	wholePathTxt := wholePathWithoutExt + ".txt"
+
+	caption, err := os.ReadFile(wholePathTxt)
 
 	b := &bytes.Buffer{}
 	writer := multipart.NewWriter(b)
 
-	file, err := os.Open(r.root + path)
+	file, err := os.Open(wholePath)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	part, _ := writer.CreateFormFile("file1", wholePath)
+	part, _ := writer.CreateFormFile("file1", filepath.Base(wholePath))
 
 	io.Copy(part, file)
 
 	writer.Close()
 
 	req, _ := http.NewRequest("POST", upload_url, b)
+
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 
 	client := &http.Client{}
 	resp, _ := client.Do(req)
@@ -94,12 +100,11 @@ func (r *VkRepository) Upload(path string) error {
 	msg := &postUrlResponse{}
 	json.Unmarshal(body, msg)
 
-	log.Print(msg)
-
-	resp, err = http.Get(fmt.Sprintf("https://api.vk.com/method/photos.save?&album_id=%d&server=%d&photos_list=%s&hash=%s&access_token=%s&v=5.131", id, msg.Server, msg.Photos_list, msg.Hash, r.token))
+	resp, err = http.Get(fmt.Sprintf("https://api.vk.com/method/photos.save?&album_id=%d&server=%d&photos_list=%s&hash=%s&caption=%s&access_token=%s&v=5.199", msg.Aid, msg.Server, msg.Photos_list, msg.Hash, url.QueryEscape(string(caption)), r.token))
 	if err != nil {
 		return err
 	}
+
 	body, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return err
@@ -111,7 +116,7 @@ func (r *VkRepository) Upload(path string) error {
 	if err != nil {
 		return err
 	}
-	log.Print(msg1.Response.Album_id)
+
 	return nil
 }
 
@@ -158,7 +163,6 @@ func (r *VkRepository) createAlbum(title string) (int, error) {
 
 func (r *VkRepository) SetToken(token string) {
 	r.token = token
-	log.Print(token)
 }
 
 func (r *VkRepository) SetId(id int) {

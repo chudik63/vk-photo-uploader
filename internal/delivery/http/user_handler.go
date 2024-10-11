@@ -3,6 +3,7 @@ package http
 import (
 	"log"
 	"net/http"
+	"sync"
 	"vk-photo-uploader/internal/entity"
 	"vk-photo-uploader/internal/infrastructure"
 	"vk-photo-uploader/internal/service"
@@ -36,30 +37,24 @@ func (u *UserHandler) Register(c *gin.Context) {
 }
 
 func (u *UserHandler) Send(c *gin.Context) {
-	//var wg sync.WaitGroup
+	var wg sync.WaitGroup
 
 	u.jsLog = infrastructure.NewSafeJsonLogger(c)
 
 	path := c.PostForm("path")
 
-	if err := u.userService.Send(path); err != nil {
-		log.Print(err)
-		u.jsLog.SendResponse(http.StatusBadRequest)
-		return
-	}
+	wg.Add(1)
 
-	//wg.Add(1)
+	go func(path string) {
+		defer wg.Done()
 
-	// go func(path string) {
-	// 	defer wg.Done()
+		if err := u.userService.Send(path); err != nil {
+			log.Print(err)
+			u.jsLog.SendResponse(http.StatusBadRequest)
+			return
+		}
+		u.jsLog.SendResponse(http.StatusOK)
+	}(path)
 
-	// 	if err := u.userService.Send(path); err != nil {
-	// 		log.Print(err)
-	// 		u.jsLog.SendResponse(http.StatusBadRequest)
-	// 		return
-	// 	}
-	// 	u.jsLog.SendResponse(http.StatusOK)
-	// }(path)
-
-	//wg.Wait()
+	wg.Wait()
 }
