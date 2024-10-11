@@ -1,0 +1,138 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #121212;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    overflow: hidden; /* Убираем скроллинг для body */
+}
+
+.control-panel {
+    position: relative; /* Изменяем на relative */
+    width: 350px;
+    height: 100vh;
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-right: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Добавляем для размещения кнопок внизу */
+}
+
+h2 {
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.folder-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    padding-bottom: 20px; /* Отступ для кнопок */
+}
+
+.folder-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.folder-list::-webkit-scrollbar-thumb {
+    background-color: #666;
+    border-radius: 10px;
+}
+
+.folder-list::-webkit-scrollbar-thumb:hover {
+    background-color: #888;
+}
+
+.folder-list::-webkit-scrollbar-track {
+    background-color: #2a2a2a;
+}
+
+.add-folder-btn, .upload-btn {
+    width: 48%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.add-folder-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.add-folder-btn:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+.upload-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Контейнер для кнопок */
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.folder {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #2a2a2a;
+    transition: background-color 0.3s ease;
+}
+
+.folder:hover {
+    background-color: #3a3a3a;
+}
+
+.folder-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.folder-toggle-icon.open {
+    transform: rotate(90deg);
+}
+
+.folder-icon {
+    font-size: 30px;
+    margin-right: 10px;
+    color: #FFD700;
+}
+
+.folder-name {
+    font-size: 18px;
+    flex-grow: 1;
+    color: #ffffff;
+}
+
+.progress-bar {
+    width: 100px;
+    height: 10px;
+    margin-left: 10px;
+}
+
+.file-list {
+    margin-top: 10px;
+    list-style-type: none;
+    padding-left: 20px;
+    color: #b0b0b0;
+    display: none;
+}
+
+.file-list li {
+    margin-bottom: 5px;
+}
