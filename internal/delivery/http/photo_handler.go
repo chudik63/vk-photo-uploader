@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"sync"
 	"time"
 	"vk-photo-uploader/internal/entity"
 	"vk-photo-uploader/internal/infrastructure"
@@ -27,10 +26,6 @@ func NewPhotoHandler(router *gin.Engine, photoService service.PhotoService) {
 }
 
 func (p *PhotoHandler) UploadPhoto(c *gin.Context) {
-	var wg sync.WaitGroup
-
-	p.jsLog = infrastructure.NewSafeJsonLogger(c)
-
 	lastModifiedStr := c.PostForm("lastModified")
 
 	lastModified, err := strconv.ParseInt(lastModifiedStr, 10, 64)
@@ -54,17 +49,11 @@ func (p *PhotoHandler) UploadPhoto(c *gin.Context) {
 		LastModified: modTime,
 	}
 
-	wg.Add(1)
+	if err := p.photoService.UploadPhoto(photo); err != nil {
+		log.Print(err)
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
 
-	go func(photo *entity.Photo) {
-		defer wg.Done()
-
-		if err := p.photoService.UploadPhoto(photo); err != nil {
-			log.Print(err)
-			return
-		}
-		p.jsLog.SendResponse(http.StatusOK)
-	}(photo)
-
-	wg.Wait()
+	c.JSON(http.StatusOK, gin.H{})
 }
