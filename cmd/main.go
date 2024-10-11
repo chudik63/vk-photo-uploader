@@ -18,10 +18,10 @@ func main() {
 
 	router := gin.Default()
 
-	//photoRepository := repository.NewPhotoRepository(cfg.Storage.Path)
-	vkRepository := repository.NewVkRepository()
+	photoRepository := repository.NewPhotoRepository(cfg.Storage.Path)
+	vkRepository := repository.NewVkRepository(cfg.Storage.Path)
 
-	photoService := service.NewPhotoService(vkRepository)
+	photoService := service.NewPhotoService(photoRepository)
 	userService := service.NewUserService(vkRepository)
 
 	http.NewPageHandler(router)

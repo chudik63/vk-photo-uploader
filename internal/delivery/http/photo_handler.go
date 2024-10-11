@@ -4,8 +4,10 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 	"vk-photo-uploader/internal/entity"
+	"vk-photo-uploader/internal/infrastructure"
 	"vk-photo-uploader/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +15,7 @@ import (
 
 type PhotoHandler struct {
 	photoService service.PhotoService
+	jsLog        *infrastructure.SafeJsonLogger
 }
 
 func NewPhotoHandler(router *gin.Engine, photoService service.PhotoService) {
@@ -24,6 +27,10 @@ func NewPhotoHandler(router *gin.Engine, photoService service.PhotoService) {
 }
 
 func (p *PhotoHandler) UploadPhoto(c *gin.Context) {
+	var wg sync.WaitGroup
+
+	p.jsLog = infrastructure.NewSafeJsonLogger(c)
+
 	lastModifiedStr := c.PostForm("lastModified")
 
 	lastModified, err := strconv.ParseInt(lastModifiedStr, 10, 64)
@@ -47,10 +54,18 @@ func (p *PhotoHandler) UploadPhoto(c *gin.Context) {
 		LastModified: modTime,
 	}
 
-	if err := p.photoService.UploadPhoto(photo); err != nil {
-		log.Print(err)
-		return
-	}
+	wg.Add(1)
 
-	c.JSON(http.StatusOK, gin.H{})
+	go func(photo *entity.Photo) {
+		defer wg.Done()
+
+		if err := p.photoService.UploadPhoto(photo); err != nil {
+			log.Print(err)
+			return
+		}
+		p.jsLog.SendResponse(http.StatusOK)
+		log.Print(photo.Name, " CREATED")
+	}(photo)
+
+	wg.Wait()
 }
