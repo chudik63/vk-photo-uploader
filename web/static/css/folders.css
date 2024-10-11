@@ -75,7 +75,6 @@ h2 {
     color: white;
 }
 
-/* Контейнер для кнопок */
 .action-buttons {
     display: flex;
     justify-content: space-between;

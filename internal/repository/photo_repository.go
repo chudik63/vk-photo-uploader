@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"bufio"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -37,6 +39,23 @@ func (r *photoRepository) Upload(photo *entity.Photo) error {
 
 	if _, err := io.Copy(dst, photo.File); err != nil {
 		return errors.New("ошибка сохранения файла")
+	}
+
+	photoExt := filepath.Ext(photo.Name)
+	metaName := photo.Name[0 : len(photo.Name)-len(photoExt)]
+	metaExt := ".txt"
+	meta, err := os.Create(filepath.Join(dir, metaName+metaExt))
+	if err != nil {
+		return errors.New("ошибка создания метаданных")
+	}
+	defer meta.Close()
+
+	writer := bufio.NewWriter(meta)
+	writer.WriteString(fmt.Sprintf("Путь: %s\nРазмер: %d Byte\nДата последнего изменения: %v", photo.Path, photo.Size, photo.LastModified))
+
+	err = writer.Flush()
+	if err != nil {
+		return errors.New("ошибка при сбросе буфера")
 	}
 
 	return nil

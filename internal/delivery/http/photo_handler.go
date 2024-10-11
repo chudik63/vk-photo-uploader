@@ -64,7 +64,6 @@ func (p *PhotoHandler) UploadPhoto(c *gin.Context) {
 			return
 		}
 		p.jsLog.SendResponse(http.StatusOK)
-		log.Print(photo.Name, " CREATED")
 	}(photo)
 
 	wg.Wait()

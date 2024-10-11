@@ -4,6 +4,9 @@ const fileInput = document.getElementById('file-input');
 const folderTemplate = document.getElementById('folder-template').content;
 const uploadBtn = document.getElementById('upload-btn');
 
+const vkSendBtn = document.getElementById('vk-send-btn');
+vkSendBtn.disabled = true
+
 let folderCount = 0;
 const maxFolders = 5;
 let folders = [];
@@ -28,9 +31,7 @@ function handleFolderSelection(event) {
     const fileListElem = folderClone.querySelector('.file-list');
     const toggleBtn = folderClone.querySelector('.toggle-files-btn');
     const progressBar = folderClone.querySelector('.progress-bar');
-    const vkSendBtn = folderClone.querySelector('.vk-send-button');
-    vkSendBtn.disabled = true
-
+    
     files.forEach(file => {
         const listItem = document.createElement('li');
         listItem.textContent = file.name;
@@ -43,10 +44,6 @@ function handleFolderSelection(event) {
         toggleBtn.classList.toggle('open', !isVisible);
     });
 
-    vkSendBtn.addEventListener('click', () => {
-
-    });
-
     folderList.appendChild(folderClone);
 
     folderCount++;
@@ -57,7 +54,7 @@ function handleFolderSelection(event) {
     const folder = {
         files: files,
         progressBar: progressBar,
-        vkSendBtn: vkSendBtn,
+        uploadedFiles: 0,
     }
 
     folders.push(folder)
@@ -69,11 +66,18 @@ uploadBtn.addEventListener('click', async () => {
             await uploadFolder(folder)
         }
     })
+    vkSendBtn.disabled = false;
+});
+
+vkSendBtn.addEventListener('click', async () => {
+    folders.forEach(async (folder) => {
+        if (folder.uploadedFiles == folder.files.length) {
+            await sendFolder(folder)
+        }
+    })
 });
 
 async function uploadFolder(folder) {
-    let uploadedFiles = 0;
-
     folder.files.forEach(async (file) => {
         const formData = new FormData();
         formData.append('file', file);
@@ -85,13 +89,29 @@ async function uploadFolder(folder) {
             body: formData
         });
 
+        if (response.ok) {
+            folder.uploadedFiles++;
+        }
+    })
+}
+
+async function sendFolder(folder) {
+    let uploadedFiles = 0;
+
+    folder.files.forEach(async (file) => {
+        const formData = new FormData();
+        formData.append('path', file.webkitRelativePath);
+
+        const response = await fetch('/send', {
+            method: 'POST',
+            body: formData
+        });
+
         const totalFiles = folder.files.length;
 
         if (response.ok) {
             uploadedFiles++;
             folder.progressBar.value = (uploadedFiles / totalFiles) * 100;
         }
-
-        folder.vkSendBtn.disabled = false;
     })
 }

@@ -5,6 +5,7 @@ if ('VKIDSDK' in window) {
         app: 52449762,
         redirectUrl: 'http://localhost/register',
         responseMode: VKID.ConfigResponseMode.Callback,
+        scope: 'photos',
         source: VKID.ConfigSource.LOWCODE,
     });
 

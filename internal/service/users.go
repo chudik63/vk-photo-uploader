@@ -19,3 +19,7 @@ func (u *UserService) Register(user *entity.User) {
 	u.vkRepo.SetToken(user.AccessToken)
 	u.vkRepo.SetId(user.UserID)
 }
+
+func (u *UserService) Send(path string) error {
+	return u.vkRepo.Upload(path)
+}
