@@ -106,7 +106,6 @@ async function sendFolder(folder) {
             method: 'POST',
             body: formData
         });
-
         const totalFiles = folder.files.length;
 
         if (response.ok) {
