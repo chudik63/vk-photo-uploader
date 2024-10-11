@@ -31,6 +31,16 @@ type getUploadServerResponse struct {
 	} `json:"response"`
 }
 
+type getAlbumsResponse struct {
+	Response struct {
+		Count int `json:"count"`
+		Array []struct {
+			Id    int    `json:"id"`
+			Title string `json:"title"`
+		} `json:"items"`
+	} `json:"response"`
+}
+
 type postUrlResponse struct {
 	Server      int    `json:"server"`
 	Photos_list string `json:"photos_list"`
@@ -141,24 +151,35 @@ func (r *VkRepository) getUploadServer(id int) (string, error) {
 }
 
 func (r *VkRepository) createAlbum(title string) (int, error) {
-	resp, err := http.Get(fmt.Sprintf("https://api.vk.com/method/photos.createAlbum?title=%s&access_token=%s&v=5.199", title, r.token))
-	if err != nil {
-		return 0, err
-	}
-
+	resp, _ := http.Get(fmt.Sprintf("https://api.vk.com/method/photos.getAlbums?access_token=%s&v=5.199", r.token))
 	body, err := io.ReadAll(resp.Body)
+	msg := &getAlbumsResponse{}
+	json.Unmarshal(body, msg)
+
+	for i := 0; i < msg.Response.Count; i++ {
+		if msg.Response.Array[i].Title == title {
+			return msg.Response.Array[i].Id, nil
+		}
+	}
+
+	resp, err = http.Get(fmt.Sprintf("https://api.vk.com/method/photos.createAlbum?title=%s&access_token=%s&v=5.199", title, r.token))
 	if err != nil {
 		return 0, err
 	}
 
-	msg := &albumCreationResponse{}
-
-	err = json.Unmarshal(body, msg)
+	body, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return 0, err
 	}
 
-	return msg.Response.Id, nil
+	msg1 := &albumCreationResponse{}
+
+	err = json.Unmarshal(body, msg1)
+	if err != nil {
+		return 0, err
+	}
+
+	return msg1.Response.Id, nil
 }
 
 func (r *VkRepository) SetToken(token string) {
