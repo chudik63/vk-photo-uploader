@@ -15,21 +15,27 @@ import (
 	"vk-photo-uploader/internal/repository/responses"
 )
 
-type VkRepository struct {
+type VkRepository interface {
+	SetToken(token string)
+	SetId(id int)
+	Upload(path string) error
+}
+
+type vkRepository struct {
 	root  string
 	token string
 	id    int
 }
 
 func NewVkRepository(path string) VkRepository {
-	return VkRepository{
+	return &vkRepository{
 		root:  path,
 		token: "",
 		id:    0,
 	}
 }
 
-func (r *VkRepository) Upload(path string) error {
+func (r *vkRepository) Upload(path string) error {
 	dir := filepath.Dir(path)
 
 	id, err := r.createAlbum(dir)
@@ -111,7 +117,7 @@ func (r *VkRepository) Upload(path string) error {
 	return nil
 }
 
-func (r *VkRepository) readCaption(path string) (string, error) {
+func (r *vkRepository) readCaption(path string) (string, error) {
 	ext := filepath.Ext(path)
 	wholePathWithoutExt := strings.TrimSuffix(path, ext)
 
@@ -125,7 +131,7 @@ func (r *VkRepository) readCaption(path string) (string, error) {
 	return string(caption), nil
 }
 
-func (r *VkRepository) getUploadServer(id int) (string, error) {
+func (r *vkRepository) getUploadServer(id int) (string, error) {
 	resp, err := http.Get(fmt.Sprintf("https://api.vk.com/method/photos.getUploadServer?&access_token=%s&album_id=%d&v=5.199", r.token, id))
 	if err != nil {
 		return "", errors.New("ошибка получения сервера загрузки")
@@ -145,7 +151,7 @@ func (r *VkRepository) getUploadServer(id int) (string, error) {
 	return msg.Response.UploadUrl, nil
 }
 
-func (r *VkRepository) createAlbum(title string) (int, error) {
+func (r *vkRepository) createAlbum(title string) (int, error) {
 	id, err := r.getAlbumId(title)
 	if err == nil {
 		return id, nil
@@ -171,7 +177,7 @@ func (r *VkRepository) createAlbum(title string) (int, error) {
 	return msg.Response.Id, nil
 }
 
-func (r *VkRepository) getAlbumId(title string) (int, error) {
+func (r *vkRepository) getAlbumId(title string) (int, error) {
 	resp, err := http.Get(fmt.Sprintf("https://api.vk.com/method/photos.getAlbums?access_token=%s&v=5.199", r.token))
 	if err != nil {
 		return 0, errors.New("нельзя получить информацию о альбомах VK")
@@ -196,10 +202,10 @@ func (r *VkRepository) getAlbumId(title string) (int, error) {
 	return 0, errors.New("альбом не существует")
 }
 
-func (r *VkRepository) SetToken(token string) {
+func (r *vkRepository) SetToken(token string) {
 	r.token = token
 }
 
-func (r *VkRepository) SetId(id int) {
+func (r *vkRepository) SetId(id int) {
 	r.id = id
 }
