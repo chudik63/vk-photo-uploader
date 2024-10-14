@@ -21,5 +21,6 @@ func (u *UserService) Register(user *entity.User) {
 }
 
 func (u *UserService) Send(path string) error {
+	// parallelism add
 	return u.vkRepo.Upload(path)
 }
