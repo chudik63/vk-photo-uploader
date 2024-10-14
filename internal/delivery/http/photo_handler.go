@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 	"vk-photo-uploader/internal/entity"
-	"vk-photo-uploader/internal/infrastructure"
 	"vk-photo-uploader/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +13,6 @@ import (
 
 type PhotoHandler struct {
 	photoService service.PhotoService
-	jsLog        *infrastructure.SafeJsonLogger
 }
 
 func NewPhotoHandler(router *gin.Engine, photoService service.PhotoService) {
@@ -28,16 +26,14 @@ func NewPhotoHandler(router *gin.Engine, photoService service.PhotoService) {
 func (p *PhotoHandler) UploadPhoto(c *gin.Context) {
 	lastModifiedStr := c.PostForm("lastModified")
 
-	lastModified, err := strconv.ParseInt(lastModifiedStr, 10, 64)
-	if err != nil {
-		log.Print(err)
-	}
+	lastModified, _ := strconv.ParseInt(lastModifiedStr, 10, 64)
+
 	modTime := time.Unix(lastModified/1000, 0)
 
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
-		c.String(http.StatusBadRequest, "Error retrieving file")
-		return
+		c.String(http.StatusNoContent, "Ошибка чтения файла")
+		log.Fatalf("Ошибка чтения файла: %v", err)
 	}
 	defer file.Close()
 
@@ -50,10 +46,10 @@ func (p *PhotoHandler) UploadPhoto(c *gin.Context) {
 	}
 
 	if err := p.photoService.UploadPhoto(photo); err != nil {
-		log.Print(err)
-		c.JSON(http.StatusBadRequest, gin.H{})
+		log.Printf("Ошибка загрузки файла: %v", err)
+		c.String(http.StatusBadRequest, "Ошибка загрузки файла")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.String(http.StatusOK, "Фотография загружена")
 }
