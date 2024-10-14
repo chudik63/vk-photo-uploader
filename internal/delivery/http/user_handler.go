@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"vk-photo-uploader/internal/entity"
-	"vk-photo-uploader/internal/infrastructure"
 	"vk-photo-uploader/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +11,6 @@ import (
 
 type UserHandler struct {
 	userService *service.UserService
-	jsLog       *infrastructure.SafeJsonLogger
 }
 
 func NewUserHandler(router *gin.Engine, userService *service.UserService) {
@@ -27,21 +25,20 @@ func NewUserHandler(router *gin.Engine, userService *service.UserService) {
 func (u *UserHandler) Register(c *gin.Context) {
 	var user entity.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		log.Print(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		c.String(http.StatusNotAcceptable, "Ошибка чтения данных пользователя")
+		log.Fatalf("Ошибка чтения данных пользователя: %v", err)
 	}
 
 	u.userService.Register(&user)
 }
 
 func (u *UserHandler) Send(c *gin.Context) {
-	path := c.PostForm("path")
+	folderName := c.PostForm("folder")
 
-	if err := u.userService.Send(path); err != nil {
-		log.Print(err)
-		return
+	if err := u.userService.Send(folderName); err != nil {
+		c.String(http.StatusBadRequest, "Ошибка отправки папки")
+		log.Fatalf("Ошибка отправки папки: %v", err)
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.String(http.StatusOK, "Папка отправлена")
 }
