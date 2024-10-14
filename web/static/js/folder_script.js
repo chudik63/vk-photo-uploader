@@ -39,7 +39,7 @@ function handleFolderSelection(event) {
     });
 
     toggleBtn.addEventListener('click', () => {
-        const isVisible = fileListElem.style.display !== 'none';
+        const isVisible = getComputedStyle(fileListElem).display !== 'none';
         fileListElem.style.display = isVisible ? 'none' : 'block';
         toggleBtn.classList.toggle('open', !isVisible);
     });
