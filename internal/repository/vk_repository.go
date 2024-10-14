@@ -12,45 +12,13 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"vk-photo-uploader/internal/repository/responses"
 )
 
 type VkRepository struct {
 	root  string
 	token string
 	id    int
-}
-
-type albumCreationResponse struct {
-	Response struct {
-		Id int `json:"id"`
-	} `json:"response"`
-}
-
-type getUploadServerResponse struct {
-	Response struct {
-		UploadUrl string `json:"upload_url"`
-	} `json:"response"`
-}
-
-type getAlbumsResponse struct {
-	Response struct {
-		Count int `json:"count"`
-		Array []struct {
-			Id    int    `json:"id"`
-			Title string `json:"title"`
-		} `json:"items"`
-	} `json:"response"`
-}
-
-type postUrlResponse struct {
-	Server      int    `json:"server"`
-	Photos_list string `json:"photos_list"`
-	Aid         int    `json:"aid"`
-	Hash        string `json:"hash"`
-}
-
-type savePhotoResponse struct {
-	Response []interface{} `json:"response"`
 }
 
 func NewVkRepository(path string) VkRepository {
@@ -117,7 +85,7 @@ func (r *VkRepository) Upload(path string) error {
 		return err
 	}
 
-	msg := &postUrlResponse{}
+	msg := &responses.PostUrlResponse{}
 	if err = json.Unmarshal(body, msg); err != nil {
 		return err
 	}
@@ -133,7 +101,7 @@ func (r *VkRepository) Upload(path string) error {
 	}
 
 	/// ПРОВЕРИТЬ загрузку
-	msg1 := &savePhotoResponse{}
+	msg1 := &responses.SavePhotoResponse{}
 
 	err = json.Unmarshal(body, msg1)
 	if err != nil {
@@ -168,7 +136,7 @@ func (r *VkRepository) getUploadServer(id int) (string, error) {
 		return "", errors.New("нельзя считать ответ создания альбома")
 	}
 
-	msg := &getUploadServerResponse{}
+	msg := &responses.GetUploadServerResponse{}
 
 	err = json.Unmarshal(body, msg)
 	if err != nil {
@@ -193,7 +161,7 @@ func (r *VkRepository) createAlbum(title string) (int, error) {
 		return 0, errors.New("нельзя считать ответ создания альбома")
 	}
 
-	msg := &albumCreationResponse{}
+	msg := &responses.AlbumCreateResponse{}
 
 	err = json.Unmarshal(body, msg)
 	if err != nil {
@@ -214,7 +182,7 @@ func (r *VkRepository) getAlbumId(title string) (int, error) {
 		return 0, errors.New("нельзя считать ответ c информацией о альбомах")
 	}
 
-	msg := &getAlbumsResponse{}
+	msg := &responses.GetAlbumsResponse{}
 	if err := json.Unmarshal(body, msg); err != nil {
 		return 0, errors.New("ошибка чтения JSON после проверки альбома")
 	}
