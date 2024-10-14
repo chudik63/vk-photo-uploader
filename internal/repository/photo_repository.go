@@ -53,10 +53,14 @@ func (r *photoRepository) Upload(photo *entity.Photo) error {
 	writer := bufio.NewWriter(meta)
 	writer.WriteString(fmt.Sprintf("Путь: %s\nРазмер: %d Byte\nДата последнего изменения: %v", photo.Path, photo.Size, photo.LastModified))
 
-	err = writer.Flush()
-	if err != nil {
-		return errors.New("ошибка при сбросе буфера")
-	}
+	writer.Flush()
 
+	return nil
+}
+
+func (r *photoRepository) Delete() error {
+	if err := os.RemoveAll(r.path); err != nil {
+		return errors.New("ошибка удаления репозитория")
+	}
 	return nil
 }
