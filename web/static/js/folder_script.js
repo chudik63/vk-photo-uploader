@@ -55,19 +55,38 @@ function handleFolderSelection(event) {
         files: files,
         progressBar: progressBar,
         uploadedFiles: 0,
+        name: folderName,
     }
 
-    folders.push(folder)
-}
+    folders.push(folder);
+    
+    (async () => {
+        await Promise.all(folder.files.map(async (file) => {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('path', file.webkitRelativePath);
+            formData.append('lastModified', file.lastModified); 
+    
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+    
+            if (response.ok) {
+                folder.uploadedFiles++;
+            }
+        }));
 
-uploadBtn.addEventListener('click', async () => {
-    folders.forEach(async (folder) => {
-        if (folder.progressBar.value == 0) {
-            await uploadFolder(folder)
+        if (folder.uploadedFiles == folder.files.length) {
+            alert(`Папка ${folder.name} загружена`);
+            vkSendBtn.disabled = false;
+        } else {
+            alert(`Ошибка загрузки папки ${folder.name}`);
         }
-    })
-    vkSendBtn.disabled = false;
-});
+        
+    })();
+
+}
 
 vkSendBtn.addEventListener('click', async () => {
     folders.forEach(async (folder) => {
@@ -76,24 +95,6 @@ vkSendBtn.addEventListener('click', async () => {
         }
     })
 });
-
-async function uploadFolder(folder) {
-    folder.files.forEach(async (file) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('path', file.webkitRelativePath);
-        formData.append('lastModified', file.lastModified); 
-
-        const response = await fetch('/upload', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (response.ok) {
-            folder.uploadedFiles++;
-        }
-    })
-}
 
 async function sendFolder(folder) {
     let uploadedFiles = 0;
