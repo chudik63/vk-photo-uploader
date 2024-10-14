@@ -4,12 +4,11 @@ const fileInput = document.getElementById('file-input');
 const folderTemplate = document.getElementById('folder-template').content;
 const uploadBtn = document.getElementById('upload-btn');
 
-const vkSendBtn = document.getElementById('vk-send-btn');
-vkSendBtn.disabled = true
+// const vkSendBtn = document.getElementById('vk-send-btn');
+// vkSendBtn.disabled = true
 
 let folderCount = 0;
 const maxFolders = 5;
-let folders = [];
 
 addFolderBtn.addEventListener('click', () => {
     if (folderCount < maxFolders) {
@@ -37,7 +36,7 @@ function handleFolderSelection(event) {
         listItem.textContent = file.name;
         fileListElem.appendChild(listItem);
     });
-
+    
     toggleBtn.addEventListener('click', () => {
         const isVisible = getComputedStyle(fileListElem).display !== 'none';
         fileListElem.style.display = isVisible ? 'none' : 'block';
@@ -58,60 +57,62 @@ function handleFolderSelection(event) {
         name: folderName,
     }
 
-    folders.push(folder);
     
-    (async () => {
-        await Promise.all(folder.files.map(async (file) => {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('path', file.webkitRelativePath);
-            formData.append('lastModified', file.lastModified); 
-    
-            const response = await fetch('/upload', {
-                method: 'POST',
-                body: formData
-            });
-    
-            if (response.ok) {
-                folder.uploadedFiles++;
-            }
-        }));
-
-        if (folder.uploadedFiles == folder.files.length) {
-            alert(`Папка ${folder.name} загружена`);
-            vkSendBtn.disabled = false;
-        } else {
-            alert(`Ошибка загрузки папки ${folder.name}`);
-        }
-        
-    })();
-
+    uploadFolder(folder);
 }
 
-vkSendBtn.addEventListener('click', async () => {
-    folders.forEach(async (folder) => {
-        if (folder.uploadedFiles == folder.files.length) {
-            await sendFolder(folder)
-        }
-    })
-});
+async function uploadFile(file, folder) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('path', file.webkitRelativePath);
+    formData.append('lastModified', file.lastModified);
 
-async function sendFolder(folder) {
-    let uploadedFiles = 0;
-
-    folder.files.forEach(async (file) => {
-        const formData = new FormData();
-        formData.append('path', file.webkitRelativePath);
-
-        const response = await fetch('/send', {
+    try {
+        const response = await fetch('/uploader/upload', {
             method: 'POST',
             body: formData
         });
-        const totalFiles = folder.files.length;
 
         if (response.ok) {
-            uploadedFiles++;
-            folder.progressBar.value = (uploadedFiles / totalFiles) * 100;
+            folder.uploadedFiles++;
+            folder.progressBar.value = (folder.uploadedFiles / folder.files.length) * 100;
+
+            if (folder.uploadedFiles === folder.files.length) {
+                alert(`Папка ${folder.name} загружена`);
+                // vkSendBtn.disabled = false;
+            }
+        } else {
+            alert(`Ошибка загрузки файла ${file.name} в папке ${folder.name}`);
         }
-    })
+    } catch (error) {
+        alert(`Ошибка сети при загрузке файла ${file.name}`);
+    }
 }
+
+// vkSendBtn.addEventListener('click', async () => {
+//     folders.forEach(async (folder) => {
+//         if (folder.uploadedFiles == folder.files.length) {
+//             await sendFolder(folder)
+//         }
+//     })
+// });
+
+// async function sendFolder(folder) {
+//     let uploadedFiles = 0;
+
+//     folder.files.forEach(async (file) => {
+//         const formData = new FormData();
+//         formData.append('path', file.webkitRelativePath);
+
+//         const response = await fetch('/send', {
+//             method: 'POST',
+//             body: formData
+//         });
+//         const totalFiles = folder.files.length;
+
+//         if (response.ok) {
+//             uploadedFiles++;
+//             folder.progressBar.value = (uploadedFiles / totalFiles) * 100;
+//         }
+//     })
+// }

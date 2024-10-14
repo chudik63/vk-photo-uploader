@@ -20,10 +20,10 @@ func NewPhotoHandler(router *gin.Engine, photoService service.PhotoService) {
 		photoService: photoService,
 	}
 
-	router.POST("/upload", handler.UploadPhoto)
+	router.POST("/uploader/upload", handler.Upload)
 }
 
-func (p *PhotoHandler) UploadPhoto(c *gin.Context) {
+func (p *PhotoHandler) Upload(c *gin.Context) {
 	lastModifiedStr := c.PostForm("lastModified")
 
 	lastModified, _ := strconv.ParseInt(lastModifiedStr, 10, 64)
@@ -32,7 +32,7 @@ func (p *PhotoHandler) UploadPhoto(c *gin.Context) {
 
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
-		c.String(http.StatusNoContent, "Ошибка чтения файла")
+		c.JSON(http.StatusNoContent, gin.H{"error": "Ошибка чтения файла"})
 		log.Fatalf("Ошибка чтения файла: %v", err)
 	}
 	defer file.Close()
@@ -47,7 +47,7 @@ func (p *PhotoHandler) UploadPhoto(c *gin.Context) {
 
 	if err := p.photoService.UploadPhoto(photo); err != nil {
 		log.Printf("Ошибка загрузки файла: %v", err)
-		c.String(http.StatusBadRequest, "Ошибка загрузки файла")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка загрузки файла"})
 		return
 	}
 

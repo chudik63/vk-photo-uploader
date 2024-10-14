@@ -47,37 +47,18 @@ h2 {
     background-color: #7d8b78;
 }
 
-.add-folder-btn {
-    width: 60%;
-    padding: 15px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    background-color: #697565;
-    color: #ECDFCC;
-    transition: background-color 0.3s ease;
-}
-
-.add-folder-btn:hover {
-    background-color: #7d8b78;
-}
-
-
-.action-buttons {
-    display: flex;
-    justify-content: center;
-    padding-top: 20px;
-    padding-bottom: 30px;
-}
-
 .folder {
+    cursor: pointer;
     display: flex;
     flex-direction: column;
     margin-bottom: 15px;
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 10px;
     transition: background-color 0.3s ease;
+}
+
+.folder:hover {
+    background-color: #424641;;
 }
 
 .folder-header {
@@ -92,6 +73,8 @@ h2 {
     border: none;
     color: #ECDFCC;
     cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
 .toggle-files-btn:focus {
@@ -99,7 +82,7 @@ h2 {
 }
 
 .toggle-files-btn.open i {
-    transform: rotate(90deg); 
+    transform: rotate(90deg);
     transition: transform 0.3s ease;
 }
 
@@ -121,14 +104,6 @@ h2 {
     height: 5px;
 }
 
-progress::-webkit-progress-value {
-    background-color: #ECDFCC;
-}
-
-progress::-moz-progress-bar {
-    background-color: #ECDFCC; 
-}
-
 .file-list {
     font-size: 12px;
     margin-top: 10px;
@@ -139,6 +114,37 @@ progress::-moz-progress-bar {
 }
 
 .file-list li {
+    margin-left: 15px;
     margin-bottom: 5px;
 }
 
+progress::-webkit-progress-value {
+    background-color: #ECDFCC;
+}
+
+progress::-moz-progress-bar {
+    background-color: #ECDFCC; 
+}
+
+.add-folder-btn {
+    width: 60%;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background-color: #697565;
+    color: #ECDFCC;
+    transition: background-color 0.3s ease;
+}
+
+.add-folder-btn:hover {
+    background-color: #7d8b78;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+    padding-bottom: 30px;
+}

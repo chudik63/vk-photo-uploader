@@ -34,7 +34,7 @@ function vkidOnSuccess(data) {
     })
     .then(response => {
         if (response.ok) {
-            window.location.href = '/folder';
+            window.location.href = '/uploader';
         } else {
             console.error('Ошибка регистрации:', response.statusText);
         }

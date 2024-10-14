@@ -10,7 +10,7 @@ type PageHandler struct {
 	staticFolder    string
 	templatesFolder string
 	indexPage       string
-	folderPage      string
+	uploaderPage    string
 }
 
 func NewPageHandler(router *gin.Engine) {
@@ -18,20 +18,20 @@ func NewPageHandler(router *gin.Engine) {
 		staticFolder:    "../web/static",
 		templatesFolder: "../web/templates",
 		indexPage:       "index.html",
-		folderPage:      "folder.html",
+		uploaderPage:    "uploader.html",
 	}
 
 	router.LoadHTMLGlob(handler.templatesFolder + "/*.html")
 	router.Static("/static", handler.staticFolder)
 
 	router.GET("/", handler.RunIndex)
-	router.GET("/folder", handler.RunFolder)
+	router.GET("/uploader", handler.RunUploader)
 }
 
 func (h *PageHandler) RunIndex(c *gin.Context) {
 	c.HTML(http.StatusOK, h.indexPage, gin.H{})
 }
 
-func (h *PageHandler) RunFolder(c *gin.Context) {
-	c.HTML(http.StatusOK, h.folderPage, gin.H{})
+func (h *PageHandler) RunUploader(c *gin.Context) {
+	c.HTML(http.StatusOK, h.uploaderPage, gin.H{})
 }
