@@ -51,5 +51,5 @@ func (p *PhotoHandler) Upload(c *gin.Context) {
 		return
 	}
 
-	c.String(http.StatusOK, "Фотография загружена")
+	c.JSON(http.StatusOK, gin.H{"status": "Фотография загружена"})
 }

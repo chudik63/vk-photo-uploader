@@ -55,38 +55,32 @@ function handleFolderSelection(event) {
         progressBar: progressBar,
         uploadedFiles: 0,
         name: folderName,
-    }
+    };
 
+    (async function(folder) {
+        for (const file of folder.files) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('path', file.webkitRelativePath);
+            formData.append('lastModified', file.lastModified);
     
-    uploadFolder(folder);
-}
-
-async function uploadFile(file, folder) {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('path', file.webkitRelativePath);
-    formData.append('lastModified', file.lastModified);
-
-    try {
-        const response = await fetch('/uploader/upload', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (response.ok) {
-            folder.uploadedFiles++;
-            folder.progressBar.value = (folder.uploadedFiles / folder.files.length) * 100;
-
-            if (folder.uploadedFiles === folder.files.length) {
-                alert(`Папка ${folder.name} загружена`);
-                // vkSendBtn.disabled = false;
+            try {
+                const response = await fetch('/uploader/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+    
+                if (response.ok) {
+                    folder.uploadedFiles++;
+                    folder.progressBar.value = (folder.uploadedFiles / folder.files.length) * 100;
+                } else {
+                    console.error(`Ошибка загрузки файла ${file.name}`);
+                }
+            } catch (error) {
+                console.error(`Ошибка при загрузке файла ${file.name}:`, error);
             }
-        } else {
-            alert(`Ошибка загрузки файла ${file.name} в папке ${folder.name}`);
         }
-    } catch (error) {
-        alert(`Ошибка сети при загрузке файла ${file.name}`);
-    }
+    })(folder);
 }
 
 // vkSendBtn.addEventListener('click', async () => {
