@@ -118,12 +118,20 @@ h2 {
     margin-bottom: 5px;
 }
 
+progress {
+    appearance: none; 
+}
+
 progress::-webkit-progress-value {
-    background-color: #ECDFCC;
+    background-color: #ECDFCC; 
 }
 
 progress::-moz-progress-bar {
     background-color: #ECDFCC; 
+}
+
+progress::-ms-fill {
+    background-color: #ECDFCC;
 }
 
 .add-folder-btn {
