@@ -30,6 +30,7 @@ function handleFolderSelection(event) {
     const fileListElem = folderClone.querySelector('.file-list');
     const toggleBtn = folderClone.querySelector('.toggle-files-btn');
     const progressBar = folderClone.querySelector('.progress-bar');
+    const trashBtn = folderClone.querySelector('.delete-folder-btn');
     
     files.forEach(file => {
         const listItem = document.createElement('li');
@@ -44,6 +45,23 @@ function handleFolderSelection(event) {
     });
 
     folderList.appendChild(folderClone);
+
+    trashBtn.addEventListener('click', async () => {
+        const response = await fetch(`/uploader/delete?foldername=${folderName}`, {
+            method: 'DELETE',
+        }); 
+
+        if (response.ok) {
+            trashBtn.parentNode.parentNode.remove()
+        }
+        
+        folderCount--;
+        if (folderCount < maxFolders) {
+            addFolderBtn.disabled = false; 
+        }
+    });
+
+    
 
     folderCount++;
     if (folderCount >= maxFolders) {

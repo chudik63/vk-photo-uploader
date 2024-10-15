@@ -21,6 +21,7 @@ func NewPhotoHandler(router *gin.Engine, photoService service.PhotoService) {
 	}
 
 	router.POST("/uploader/upload", handler.Upload)
+	router.DELETE("/uploader/delete", handler.Delete)
 }
 
 func (p *PhotoHandler) Upload(c *gin.Context) {
@@ -52,4 +53,15 @@ func (p *PhotoHandler) Upload(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "Фотография загружена"})
+}
+
+func (p *PhotoHandler) Delete(c *gin.Context) {
+	folderName := c.Query("foldername")
+	if err := p.photoService.DeleteFolder(folderName); err != nil {
+		log.Printf("Ошибка удаления папки: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка удаления папки"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "Папка удалена"})
 }

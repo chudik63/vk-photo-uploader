@@ -68,7 +68,7 @@ h2 {
     font-size: 16px;
 }
 
-.toggle-files-btn {
+.toggle-files-btn, .delete-folder-btn {
     background: none;
     border: none;
     color: #ECDFCC;
@@ -86,7 +86,7 @@ h2 {
     transition: transform 0.3s ease;
 }
 
-.toggle-files-btn:hover {
+.toggle-files-btn:hover, .delete-folder-btn:hover {
     color: #fff5e6; 
 }
 
@@ -99,6 +99,7 @@ h2 {
     margin-left: 10px;
     flex-grow: 1;
 }
+
 
 .progress-bar {
     height: 5px;

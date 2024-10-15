@@ -12,6 +12,7 @@ import (
 
 type PhotoRepository interface {
 	Upload(photo *entity.Photo) error
+	DeleteFolder(name string) error
 }
 
 type photoRepository struct {
@@ -58,9 +59,9 @@ func (r *photoRepository) Upload(photo *entity.Photo) error {
 	return nil
 }
 
-func (r *photoRepository) Delete() error {
-	if err := os.RemoveAll(r.path); err != nil {
-		return errors.New("ошибка удаления репозитория")
+func (r *photoRepository) DeleteFolder(name string) error {
+	if err := os.RemoveAll(filepath.Join(r.path, name)); err != nil {
+		return errors.New("ошибка удаления папки")
 	}
 	return nil
 }

@@ -7,6 +7,7 @@ import (
 
 type PhotoService interface {
 	UploadPhoto(photo *entity.Photo) error
+	DeleteFolder(name string) error
 }
 
 type photoService struct {
@@ -21,4 +22,8 @@ func NewPhotoService(photoRepo repository.PhotoRepository) PhotoService {
 
 func (p *photoService) UploadPhoto(photo *entity.Photo) error {
 	return p.photoRepo.Upload(photo)
+}
+
+func (p *photoService) DeleteFolder(name string) error {
+	return p.photoRepo.DeleteFolder(name)
 }
