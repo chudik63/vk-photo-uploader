@@ -8,35 +8,38 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+	"vk-photo-uploader/internal/entity"
 	"vk-photo-uploader/internal/repository/responses"
 )
 
+type PhotoRepository interface {
+	UploadPhoto(photo *entity.Photo) error
+	DeleteFolder(name string) error
+}
+
 type VkRepository interface {
+	PhotoRepository
 	SetToken(token string)
 	SetId(id int)
-	Upload(path string) error
 }
 
 type vkRepository struct {
-	root  string
 	token string
 	id    int
 }
 
-func NewVkRepository(path string) VkRepository {
+func NewVkRepository() VkRepository {
 	return &vkRepository{
-		root:  path,
 		token: "",
 		id:    0,
 	}
 }
 
-func (r *vkRepository) Upload(path string) error {
-	dir := filepath.Dir(path)
+func (r *vkRepository) UploadPhoto(photo *entity.Photo) error {
+	dir := filepath.Dir(photo.Path)
 
 	id, err := r.createAlbum(dir)
 	if err != nil {
@@ -47,30 +50,15 @@ func (r *vkRepository) Upload(path string) error {
 	if err != nil {
 		return err
 	}
-
-	wholePath, _ := os.Getwd()
-	wholePath = filepath.Join(wholePath, r.root, path)
-
-	caption, err := r.readCaption(wholePath)
-	if err != nil {
-		return err
-	}
-
 	b := &bytes.Buffer{}
 	writer := multipart.NewWriter(b)
 
-	file, err := os.Open(wholePath)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	part, err := writer.CreateFormFile("file1", filepath.Base(wholePath))
+	part, err := writer.CreateFormFile("file1", photo.Name)
 	if err != nil {
 		return err
 	}
 
-	if _, err = io.Copy(part, file); err != nil {
+	if _, err = io.Copy(part, photo.File); err != nil {
 		return err
 	}
 
@@ -96,7 +84,7 @@ func (r *vkRepository) Upload(path string) error {
 		return err
 	}
 
-	resp, err = http.Get(fmt.Sprintf("https://api.vk.com/method/photos.save?&album_id=%d&server=%d&photos_list=%s&hash=%s&caption=%s&access_token=%s&v=5.199", msg.Aid, msg.Server, msg.Photos_list, msg.Hash, url.QueryEscape(caption), r.token))
+	_, err = http.Get(fmt.Sprintf("https://api.vk.com/method/photos.save?album_id=%d&server=%d&photos_list=%s&hash=%s&access_token=%s&v=5.199", msg.Aid, msg.Server, msg.Photos_list, msg.Hash, r.token))
 	if err != nil {
 		return err
 	}
@@ -114,6 +102,10 @@ func (r *vkRepository) Upload(path string) error {
 		return err
 	}
 
+	return nil
+}
+
+func (r *vkRepository) DeleteFolder(path string) error {
 	return nil
 }
 

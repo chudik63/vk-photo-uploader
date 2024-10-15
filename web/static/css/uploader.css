@@ -56,7 +56,11 @@ h2 {
 }
 
 .folder:hover {
-    background-color: #424641;;
+    background-color: #424641;
+}
+
+.folder:hover:has(.add-folder-btn:disabled) {
+    background: none;
 }
 
 .folder-header {
@@ -155,6 +159,12 @@ progress::-ms-fill {
 .add-folder-btn:active {
     color: #ECDFCC;
     border: 2px solid #ECDFCC;
+}
+
+.add-folder-btn:disabled:hover, .add-folder-btn:disabled:active, .add-folder-btn:disabled {
+    color: #ecdfcc50;
+    border: none;
+    cursor: default;
 }
 
 

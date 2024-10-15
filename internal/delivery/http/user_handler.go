@@ -19,7 +19,6 @@ func NewUserHandler(router *gin.Engine, userService *service.UserService) {
 	}
 
 	router.POST("/register", handler.Register)
-	router.POST("/send", handler.Send)
 }
 
 func (u *UserHandler) Register(c *gin.Context) {
@@ -30,15 +29,4 @@ func (u *UserHandler) Register(c *gin.Context) {
 	}
 
 	u.userService.Register(&user)
-}
-
-func (u *UserHandler) Send(c *gin.Context) {
-	folderName := c.PostForm("folder")
-
-	if err := u.userService.Send(folderName); err != nil {
-		c.String(http.StatusBadRequest, "Ошибка отправки папки")
-		log.Fatalf("Ошибка отправки папки: %v", err)
-	}
-
-	c.String(http.StatusOK, "Папка отправлена")
 }

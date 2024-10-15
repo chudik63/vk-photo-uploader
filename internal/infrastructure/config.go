@@ -8,9 +8,6 @@ type Config struct {
 	Server struct {
 		Port string
 	}
-	Storage struct {
-		Path string
-	}
 }
 
 func LoadConfig() (*Config, error) {

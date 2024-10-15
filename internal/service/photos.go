@@ -21,7 +21,7 @@ func NewPhotoService(photoRepo repository.PhotoRepository) PhotoService {
 }
 
 func (p *photoService) UploadPhoto(photo *entity.Photo) error {
-	return p.photoRepo.Upload(photo)
+	return p.photoRepo.UploadPhoto(photo)
 }
 
 func (p *photoService) DeleteFolder(name string) error {

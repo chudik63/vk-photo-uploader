@@ -33,11 +33,11 @@ function handleFolderSelection(event) {
     const progressBar = folderClone.querySelector('.progress-bar');
     const trashBtn = folderClone.querySelector('.delete-folder-btn');
     
-    files.forEach(file => {
-        const listItem = document.createElement('li');
-        listItem.textContent = file.name;
-        fileListElem.appendChild(listItem);
-    });
+    // files.forEach(file => {
+    //     const listItem = document.createElement('li');
+    //     listItem.textContent = file.name;
+    //     fileListElem.appendChild(listItem);
+    // });
     
     toggleBtn.addEventListener('click', () => {
         const isVisible = getComputedStyle(fileListElem).display !== 'none';
@@ -78,6 +78,10 @@ function handleFolderSelection(event) {
 
     (async function(folder) {
         for (const file of folder.files) {
+            const listItem = document.createElement('li');
+            listItem.textContent = file.name;
+            fileListElem.appendChild(listItem);
+
             const formData = new FormData();
             formData.append('file', file);
             formData.append('path', file.webkitRelativePath);
