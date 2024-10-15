@@ -15,7 +15,6 @@ body {
     height: 100vh;
     background-color: #3c3f3b;
     padding: 20px;
-    border-right: 1px solid #333;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -39,12 +38,12 @@ h2 {
 }
 
 .folder-list::-webkit-scrollbar-thumb {
-    background-color: #697565;
+    background-color: #ecdfcca9;
     border-radius: 10px;
 }
 
 .folder-list::-webkit-scrollbar-thumb:hover {
-    background-color: #7d8b78;
+    background-color: #ECDFCC;
 }
 
 .folder {
@@ -52,7 +51,6 @@ h2 {
     display: flex;
     flex-direction: column;
     margin-bottom: 15px;
-    padding: 10px;
     border-radius: 10px;
     transition: background-color 0.3s ease;
 }
@@ -66,19 +64,20 @@ h2 {
     align-items: center;
     justify-content: space-between;
     font-size: 16px;
+    padding: 10px;
 }
 
-.toggle-files-btn, .delete-folder-btn {
+.toggle-files-btn, .delete-folder-btn, .add-folder-btn {
     background: none;
     border: none;
-    color: #ECDFCC;
+    color: #ecdfcca8;
     cursor: pointer;
     display: flex;
     align-items: center;
 }
 
-.toggle-files-btn:focus {
-    outline: none;
+.toggle-files-btn.open {
+    color: #ECDFCC; 
 }
 
 .toggle-files-btn.open i {
@@ -87,7 +86,7 @@ h2 {
 }
 
 .toggle-files-btn:hover, .delete-folder-btn:hover {
-    color: #fff5e6; 
+    color: #ECDFCC; 
 }
 
 .toggle-files-btn i {
@@ -136,24 +135,27 @@ progress::-ms-fill {
 }
 
 .add-folder-btn {
-    width: 60%;
-    padding: 15px;
+    width: 100%;
+    margin: 0;
+    padding: 10px;
     font-size: 16px;
     border-radius: 10px;
-    border: none;
+    border: 1px solid #3c3f3b;
     cursor: pointer;
-    background-color: #697565;
-    color: #ECDFCC;
-    transition: background-color 0.3s ease;
+    color: #ecdfcc50;
+    transition: color 0.3s ease, border 0.3s ease;
+    justify-content: center;
 }
 
 .add-folder-btn:hover {
-    background-color: #7d8b78;
+    color: #ecdfcc9f;
+    border: 1px solid #ecdfcc3d;
 }
 
-.action-buttons {
-    display: flex;
-    justify-content: center;
-    padding-top: 20px;
-    padding-bottom: 30px;
+.add-folder-btn:active {
+    color: #ECDFCC;
+    border: 2px solid #ECDFCC;
 }
+
+
+

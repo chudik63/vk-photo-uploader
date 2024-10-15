@@ -10,13 +10,16 @@
 <body>
     <div class="control-panel">
         <h2>Ваши папочки</h2>
-        <div id="folder-list" class="folder-list"></div>
-        
-        <div class="action-buttons">
-            <button id="add-folder-btn" class="add-folder-btn">
-                <i class="fas fa-plus"></i> Загрузить папочку
-            </button>
+        <div id="folder-list" class="folder-list">
+
+            <div class="folder" id="add-folder-btn-node">
+                <button id="add-folder-btn" class="add-folder-btn">
+                    <i class="fas fa-plus"></i>&nbsp;Загрузить папочку
+                </button>
+            </div>
+    
         </div>
+        
     </div>
 
     <template id="folder-template">

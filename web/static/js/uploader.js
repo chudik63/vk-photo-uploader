@@ -1,5 +1,6 @@
 const folderList = document.getElementById('folder-list');
 const addFolderBtn = document.getElementById('add-folder-btn');
+const addFolderBtnNode = document.getElementById('add-folder-btn-node');
 const fileInput = document.getElementById('file-input');
 const folderTemplate = document.getElementById('folder-template').content;
 const uploadBtn = document.getElementById('upload-btn');
@@ -44,7 +45,7 @@ function handleFolderSelection(event) {
         toggleBtn.classList.toggle('open', !isVisible);
     });
 
-    folderList.appendChild(folderClone);
+    folderList.insertBefore(folderClone, addFolderBtnNode);
 
     trashBtn.addEventListener('click', async () => {
         const response = await fetch(`/uploader/delete?foldername=${folderName}`, {
