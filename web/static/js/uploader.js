@@ -62,8 +62,6 @@ function handleFolderSelection(event) {
         }
     });
 
-    
-
     folderCount++;
     if (folderCount >= maxFolders) {
         addFolderBtn.disabled = true;
@@ -77,59 +75,34 @@ function handleFolderSelection(event) {
     };
 
     (async function(folder) {
-        for (const file of folder.files) {
-            const listItem = document.createElement('li');
-            listItem.textContent = file.name;
-            fileListElem.appendChild(listItem);
+        let formData = new FormData();
+        
+        let count = 0;
 
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('path', file.webkitRelativePath);
-            formData.append('lastModified', file.lastModified);
-    
-            try {
-                const response = await fetch('/uploader/upload', {
+        for (let i = 0; i < folder.files.length; i++) {
+            count++;
+            formData.append(`file${count}`, folder.files[i]);
+            
+            if ((i + 1) % 5 === 0 || i === folder.files.length - 1) {
+                const response = fetch (`uploader/upload?folder=${folder.name}&count=${count}`, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
                 });
+
+                // const listItem = document.createElement('li');
+                // listItem.textContent = file.name;
+                // fileListElem.appendChild(listItem);
+
+                // if (response.ok) {
+                //     folder.uploadedFiles++;
+                //     folder.progressBar.value = (folder.uploadedFiles / folder.files.length) * 100;
+                // } else {
+                //     console.error(`Ошибка загрузки файла ${file.name}`);
+                // }
     
-                if (response.ok) {
-                    folder.uploadedFiles++;
-                    folder.progressBar.value = (folder.uploadedFiles / folder.files.length) * 100;
-                } else {
-                    console.error(`Ошибка загрузки файла ${file.name}`);
-                }
-            } catch (error) {
-                console.error(`Ошибка при загрузке файла ${file.name}:`, error);
+                formData = new FormData();
+                count = 0;
             }
         }
     })(folder);
 }
-
-// vkSendBtn.addEventListener('click', async () => {
-//     folders.forEach(async (folder) => {
-//         if (folder.uploadedFiles == folder.files.length) {
-//             await sendFolder(folder)
-//         }
-//     })
-// });
-
-// async function sendFolder(folder) {
-//     let uploadedFiles = 0;
-
-//     folder.files.forEach(async (file) => {
-//         const formData = new FormData();
-//         formData.append('path', file.webkitRelativePath);
-
-//         const response = await fetch('/send', {
-//             method: 'POST',
-//             body: formData
-//         });
-//         const totalFiles = folder.files.length;
-
-//         if (response.ok) {
-//             uploadedFiles++;
-//             folder.progressBar.value = (uploadedFiles / totalFiles) * 100;
-//         }
-//     })
-// }

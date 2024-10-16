@@ -6,7 +6,7 @@ import (
 )
 
 type PhotoService interface {
-	UploadPhoto(photo *entity.Photo) error
+	UploadPhotos(photos []*entity.Photo) error
 	DeleteFolder(name string) error
 }
 
@@ -20,10 +20,25 @@ func NewPhotoService(photoRepo repository.PhotoRepository) PhotoService {
 	}
 }
 
-func (p *photoService) UploadPhoto(photo *entity.Photo) error {
-	return p.photoRepo.UploadPhoto(photo)
+func (p *photoService) UploadPhotos(photos []*entity.Photo) error {
+	id, err := p.photoRepo.CreateAlbum(photos[0].Folder)
+	if err != nil {
+		return err
+	}
+
+	url, err := p.photoRepo.GetUploadServer(id)
+	if err != nil {
+		return err
+	}
+
+	err = p.photoRepo.Upload(url, photos...)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (p *photoService) DeleteFolder(name string) error {
-	return p.photoRepo.DeleteFolder(name)
+	return p.photoRepo.DeleteAlbum(name)
 }
