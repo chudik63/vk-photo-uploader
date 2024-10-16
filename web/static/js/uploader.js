@@ -22,6 +22,8 @@ fileInput.addEventListener('change', handleFolderSelection);
 function handleFolderSelection(event) {
     const files = Array.from(event.target.files);
 
+    console.log(files)
+
     const folderName = files[0].webkitRelativePath.split('/')[0];
 
     const folderClone = document.importNode(folderTemplate, true);
@@ -32,12 +34,6 @@ function handleFolderSelection(event) {
     const toggleBtn = folderClone.querySelector('.toggle-files-btn');
     const progressBar = folderClone.querySelector('.progress-bar');
     const trashBtn = folderClone.querySelector('.delete-folder-btn');
-    
-    // files.forEach(file => {
-    //     const listItem = document.createElement('li');
-    //     listItem.textContent = file.name;
-    //     fileListElem.appendChild(listItem);
-    // });
     
     toggleBtn.addEventListener('click', () => {
         const isVisible = getComputedStyle(fileListElem).display !== 'none';
@@ -76,31 +72,38 @@ function handleFolderSelection(event) {
 
     (async function(folder) {
         let formData = new FormData();
+        let listItems = [];
         
         let count = 0;
 
         for (let i = 0; i < folder.files.length; i++) {
             count++;
+
             formData.append(`file${count}`, folder.files[i]);
+
+            const listItem = document.createElement('li');
+            listItem.textContent = folder.files[i].name;
+            listItems.push(listItem)
             
             if ((i + 1) % 5 === 0 || i === folder.files.length - 1) {
-                const response = fetch (`uploader/upload?folder=${folder.name}&count=${count}`, {
+                const response = await fetch (`uploader/upload?folder=${folder.name}&count=${count}`, {
                     method: 'POST',
                     body: formData,
                 });
 
-                // const listItem = document.createElement('li');
-                // listItem.textContent = file.name;
-                // fileListElem.appendChild(listItem);
+                if (response.ok) {
+                    listItems.forEach((listItem) => {
+                        fileListElem.appendChild(listItem);
+                        folder.uploadedFiles++;
+                        folder.progressBar.value = (folder.uploadedFiles / folder.files.length) * 100;
+                    })
+                   
+                } else {
+                    console.error(`Ошибка загрузки файлов`);
+                }
 
-                // if (response.ok) {
-                //     folder.uploadedFiles++;
-                //     folder.progressBar.value = (folder.uploadedFiles / folder.files.length) * 100;
-                // } else {
-                //     console.error(`Ошибка загрузки файла ${file.name}`);
-                // }
-    
                 formData = new FormData();
+                listItems = [];
                 count = 0;
             }
         }

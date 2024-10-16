@@ -22,12 +22,12 @@ func NewPhotoService(photoRepo repository.PhotoRepository) PhotoService {
 
 func (p *photoService) UploadPhotos(photos []*entity.Photo) error {
 	id, err := p.photoRepo.CreateAlbum(photos[0].Folder)
-	if err != nil {
+	if err != nil || id == 0 {
 		return err
 	}
 
 	url, err := p.photoRepo.GetUploadServer(id)
-	if err != nil {
+	if err != nil || url == "" {
 		return err
 	}
 

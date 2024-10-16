@@ -44,6 +44,7 @@ func (r *vkRepository) CreateAlbum(title string) (int, error) {
 
 	id, err := r.getAlbumId(title)
 	if err == nil {
+		r.mu.Unlock()
 		return id, nil
 	}
 
@@ -130,6 +131,7 @@ func (r *vkRepository) Upload(url string, photos ...*entity.Photo) error {
 	}
 
 	err = r.savePhoto(msg.Aid, msg.Server, msg.Photos_list, msg.Hash)
+
 	if err != nil {
 		return err
 	}
@@ -138,6 +140,13 @@ func (r *vkRepository) Upload(url string, photos ...*entity.Photo) error {
 }
 
 func (r *vkRepository) DeleteAlbum(title string) error {
+	id, err := r.getAlbumId(title)
+	if err != nil {
+		return err
+	}
+
+	http.Get(fmt.Sprintf("https://api.vk.com/method/photos.deleteAlbum?album_id=%d&access_token=%s&v=5.199", id, r.token))
+
 	return nil
 }
 
@@ -152,12 +161,15 @@ func (r *vkRepository) savePhoto(aid, server int, photos_list, hash string) erro
 		return err
 	}
 
-	/// ПРОВЕРИТЬ загрузку
 	msg := &responses.SavePhotoResponse{}
 
 	err = json.Unmarshal(body, msg)
 	if err != nil {
 		return err
+	}
+
+	if len(msg.Response) == 0 {
+		return errors.New("ошибка загрузки фотографий")
 	}
 
 	return nil

@@ -30,5 +30,8 @@ type PostUrlResponse struct {
 }
 
 type SavePhotoResponse struct {
-	Response []interface{} `json:"response"`
+	Response []struct {
+		Album_id int `json:"album_id"`
+		Id       int `json:"id"`
+	} `json:"response"`
 }
