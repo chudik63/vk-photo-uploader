@@ -6,18 +6,20 @@ body {
     padding: 0;
     height: 100vh;
     display: flex;
-    overflow: hidden;
+    justify-content: center;
+    align-items: center; 
 }
 
 .control-panel {
-    position: relative; 
-    width: 350px;
-    height: 100vh;
+    width: 90%;
+    height: 80vh;
     background-color: #3c3f3b;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
 }
 
 h2 {
@@ -66,9 +68,7 @@ h2 {
 .folder-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     font-size: 16px;
-    padding: 10px;
 }
 
 .toggle-files-btn, .delete-folder-btn, .add-folder-btn {
@@ -78,6 +78,16 @@ h2 {
     cursor: pointer;
     display: flex;
     align-items: center;
+    transition: color 0.3s ease;
+}
+
+.toggle-files-btn {
+    flex-grow: 1; 
+    padding: 10px;
+}
+
+.delete-folder-btn {
+    margin-left: auto;
 }
 
 .toggle-files-btn.open {
@@ -101,6 +111,7 @@ h2 {
     font-size: 18px;
     margin-left: 10px;
     flex-grow: 1;
+    text-align: left;
 }
 
 
@@ -147,7 +158,7 @@ progress::-ms-fill {
     border: 1px solid #3c3f3b;
     cursor: pointer;
     color: #ecdfcc50;
-    transition: color 0.3s ease, border 0.3s ease;
+    transition: border 0.3s ease;
     justify-content: center;
 }
 
