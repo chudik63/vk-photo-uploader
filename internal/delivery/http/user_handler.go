@@ -14,6 +14,7 @@ func NewUserHandler(router *gin.Engine) {
 	handler := &UserHandler{}
 
 	router.POST("/register", handler.Register)
+	router.POST("/logout", handler.Logout)
 }
 
 func (u *UserHandler) Register(c *gin.Context) {
@@ -23,4 +24,9 @@ func (u *UserHandler) Register(c *gin.Context) {
 		log.Fatalf("Ошибка чтения данных пользователя: %v", err)
 	}
 	c.SetCookie("vk_token", user.AccessToken, 1<<20, "/", "localhost", false, true)
+}
+
+func (u *UserHandler) Logout(c *gin.Context) {
+	c.SetCookie("vk_token", "", -1, "/", "localhost", false, true)
+	c.String(http.StatusOK, "Выход")
 }

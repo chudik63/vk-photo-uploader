@@ -9,7 +9,7 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if c.Request.URL.Path == "/auth" || c.Request.URL.Path == "/register" || strings.Contains(c.Request.URL.Path, "/static") {
+		if c.Request.URL.Path == "/auth" || c.Request.URL.Path == "/register" || c.Request.URL.Path == "/logout" || strings.Contains(c.Request.URL.Path, "/static") {
 			c.Next()
 			return
 		}

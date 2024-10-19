@@ -4,6 +4,7 @@ const addFolderBtnNode = document.getElementById('add-folder-btn-node');
 const fileInput = document.getElementById('file-input');
 const folderTemplate = document.getElementById('folder-template').content;
 const uploadBtn = document.getElementById('upload-btn');
+const logoutBtn = document.getElementById('logout-btn');
 
 let folderCount = 0;
 const maxFolders = 5;
@@ -13,6 +14,16 @@ addFolderBtn.addEventListener('click', () => {
         fileInput.click();
     }
 });
+
+logoutBtn.addEventListener('click', async () => {
+    const response = await fetch('/logout', {
+        method: "POST",
+    }); 
+
+    if (response.ok) {
+        window.location.reload();
+    }
+})
 
 fileInput.addEventListener('change', handleFolderSelection);
 

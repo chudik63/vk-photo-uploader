@@ -71,7 +71,7 @@ h2 {
     font-size: 16px;
 }
 
-.toggle-files-btn, .delete-folder-btn, .add-folder-btn {
+.toggle-files-btn, .delete-folder-btn, .add-folder-btn, .logout-btn {
     background: none;
     border: none;
     color: #ecdfcca8;
@@ -99,7 +99,7 @@ h2 {
     transition: transform 0.3s ease;
 }
 
-.toggle-files-btn:hover, .delete-folder-btn:hover {
+.toggle-files-btn:hover, .delete-folder-btn:hover, .logout-btn:hover {
     color: #ECDFCC; 
 }
 
@@ -164,12 +164,10 @@ progress::-ms-fill {
 
 .add-folder-btn:hover {
     color: #ecdfcc9f;
-    border: 1px solid #ecdfcc3d;
 }
 
-.add-folder-btn:active {
+.add-folder-btn:active, .logout-btn:active {
     color: #ECDFCC;
-    border: 2px solid #ECDFCC;
 }
 
 .add-folder-btn:disabled:hover, .add-folder-btn:disabled:active, .add-folder-btn:disabled {
@@ -178,5 +176,13 @@ progress::-ms-fill {
     cursor: default;
 }
 
-
+.logout-btn {
+    position: absolute; 
+    top: 10px; 
+    right: 4%; 
+    padding: 10px 15px;
+    cursor: pointer; 
+    font-size: 16px;
+    background: none;
+}
 
