@@ -3,13 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VK Photo uploader</title>
-    <link rel='stylesheet' href='static/css/styles.css'>
+    <title>Загрузчик папок</title>
+    <link rel='stylesheet' href='static/css/uploader.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="vk-auth-container">
-        <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
-        <script src="static/js/auth.js"></script>
+    <div class="control-panel">
+        <h2>Ваши папочки</h2>
+        <div id="folder-list" class="folder-list">
+
+            <div class="folder" id="add-folder-btn-node">
+                <button id="add-folder-btn" class="add-folder-btn">
+                    <i class="fas fa-plus"></i>&nbsp;Загрузить папочку
+                </button>
+            </div>
+    
+        </div>
+        
     </div>
+
+    <template id="folder-template">
+        <div class="folder">
+            <div class="folder-header">
+                
+                <button class="toggle-files-btn">
+                    <i class="fas fa-chevron-right"></i>
+                    <span class="folder-name"></span>
+                    <progress class="progress-bar" value="0" max="100"></progress>
+                </button>
+
+                <button class="delete-folder-btn">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+            <ul class="file-list">  
+            </ul>
+        </div>
+    </template>
+
+    <input type="file" id="file-input" webkitdirectory directory style="display: none;" />
+
+    <script src="static/js/uploader.js"></script>
 </body>
 </html>

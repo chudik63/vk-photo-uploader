@@ -5,9 +5,6 @@ const fileInput = document.getElementById('file-input');
 const folderTemplate = document.getElementById('folder-template').content;
 const uploadBtn = document.getElementById('upload-btn');
 
-// const vkSendBtn = document.getElementById('vk-send-btn');
-// vkSendBtn.disabled = true
-
 let folderCount = 0;
 const maxFolders = 5;
 
@@ -86,7 +83,7 @@ function handleFolderSelection(event) {
             listItems.push(listItem)
             
             if ((i + 1) % 5 === 0 || i === folder.files.length - 1) {
-                const response = await fetch (`uploader/upload?folder=${folder.name}&count=${count}`, {
+                const response = await fetch (`/uploader/upload?folder=${folder.name}&count=${count}`, {
                     method: 'POST',
                     body: formData,
                 });

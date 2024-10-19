@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"vk-photo-uploader/internal/delivery/http"
+	"vk-photo-uploader/internal/delivery/http/middleware"
 	"vk-photo-uploader/internal/infrastructure"
 	"vk-photo-uploader/internal/repository"
 	"vk-photo-uploader/internal/service"
@@ -17,14 +18,14 @@ func main() {
 	}
 
 	router := gin.Default()
+	router.Use(middleware.AuthMiddleware())
 
 	vkRepository := repository.NewVkRepository()
 
 	photoService := service.NewPhotoService(vkRepository)
-	userService := service.NewUserService(vkRepository)
 
 	http.NewPageHandler(router)
-	http.NewUserHandler(router, userService)
+	http.NewUserHandler(router)
 	http.NewPhotoHandler(router, photoService)
 
 	if err := router.Run(cfg.Server.Port); err != nil {

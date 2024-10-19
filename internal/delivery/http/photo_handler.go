@@ -27,6 +27,7 @@ func NewPhotoHandler(router *gin.Engine, photoService service.PhotoService) {
 func (p *PhotoHandler) Upload(c *gin.Context) {
 	count, _ := strconv.Atoi(c.Query("count"))
 	folder := c.Query("folder")
+	token, _ := c.Cookie("vk_token")
 
 	photos := make([]*entity.Photo, count)
 
@@ -46,7 +47,7 @@ func (p *PhotoHandler) Upload(c *gin.Context) {
 		}
 	}
 
-	if err := p.photoService.UploadPhotos(photos); err != nil {
+	if err := p.photoService.UploadPhotos(photos, token); err != nil {
 		log.Printf("Ошибка загрузки файлов: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка загрузки файлов"})
 		return
@@ -57,7 +58,8 @@ func (p *PhotoHandler) Upload(c *gin.Context) {
 
 func (p *PhotoHandler) Delete(c *gin.Context) {
 	folderName := c.Query("foldername")
-	if err := p.photoService.DeleteFolder(folderName); err != nil {
+	token, _ := c.Cookie("vk_token")
+	if err := p.photoService.DeleteFolder(folderName, token); err != nil {
 		log.Printf("Ошибка удаления папки: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка удаления папки"})
 		return

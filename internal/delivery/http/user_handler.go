@@ -4,19 +4,14 @@ import (
 	"log"
 	"net/http"
 	"vk-photo-uploader/internal/entity"
-	"vk-photo-uploader/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
 
-type UserHandler struct {
-	userService *service.UserService
-}
+type UserHandler struct{}
 
-func NewUserHandler(router *gin.Engine, userService *service.UserService) {
-	handler := &UserHandler{
-		userService: userService,
-	}
+func NewUserHandler(router *gin.Engine) {
+	handler := &UserHandler{}
 
 	router.POST("/register", handler.Register)
 }
@@ -27,6 +22,5 @@ func (u *UserHandler) Register(c *gin.Context) {
 		c.String(http.StatusNotAcceptable, "Ошибка чтения данных пользователя")
 		log.Fatalf("Ошибка чтения данных пользователя: %v", err)
 	}
-
-	u.userService.Register(&user)
+	c.SetCookie("vk_token", user.AccessToken, 1<<20, "/", "localhost", false, true)
 }

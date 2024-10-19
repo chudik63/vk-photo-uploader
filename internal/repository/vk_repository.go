@@ -14,41 +14,30 @@ import (
 )
 
 type PhotoRepository interface {
-	CreateAlbum(title string) (int, error)
-	GetUploadServer(id int) (string, error)
-	Upload(url string, photos ...*entity.Photo) error
-	DeleteAlbum(name string) error
-}
-
-type VkRepository interface {
-	PhotoRepository
-	SetToken(token string)
-	SetId(id int)
+	CreateAlbum(title, token string) (int, error)
+	GetUploadServer(id int, token string) (string, error)
+	Upload(url, token string, photos ...*entity.Photo) error
+	DeleteAlbum(name, token string) error
 }
 
 type vkRepository struct {
-	token string
-	id    int
-	mu    sync.Mutex
+	mu sync.Mutex
 }
 
-func NewVkRepository() VkRepository {
-	return &vkRepository{
-		token: "",
-		id:    0,
-	}
+func NewVkRepository() PhotoRepository {
+	return &vkRepository{}
 }
 
-func (r *vkRepository) CreateAlbum(title string) (int, error) {
+func (r *vkRepository) CreateAlbum(title, token string) (int, error) {
 	r.mu.Lock()
 
-	id, err := r.getAlbumId(title)
+	id, err := r.getAlbumId(title, token)
 	if err == nil {
 		r.mu.Unlock()
 		return id, nil
 	}
 
-	resp, err := http.Get(fmt.Sprintf("https://api.vk.com/method/photos.createAlbum?title=%s&access_token=%s&v=5.199", title, r.token))
+	resp, err := http.Get(fmt.Sprintf("https://api.vk.com/method/photos.createAlbum?title=%s&access_token=%s&v=5.199", title, token))
 	if err != nil {
 		return 0, errors.New("нельзя создать альбом VK")
 	}
@@ -70,8 +59,8 @@ func (r *vkRepository) CreateAlbum(title string) (int, error) {
 	return msg.Response.Id, nil
 }
 
-func (r *vkRepository) GetUploadServer(id int) (string, error) {
-	resp, err := http.Get(fmt.Sprintf("https://api.vk.com/method/photos.getUploadServer?&access_token=%s&album_id=%d&v=5.199", r.token, id))
+func (r *vkRepository) GetUploadServer(id int, token string) (string, error) {
+	resp, err := http.Get(fmt.Sprintf("https://api.vk.com/method/photos.getUploadServer?&access_token=%s&album_id=%d&v=5.199", token, id))
 	if err != nil {
 		return "", errors.New("ошибка получения сервера загрузки")
 	}
@@ -90,7 +79,7 @@ func (r *vkRepository) GetUploadServer(id int) (string, error) {
 	return msg.Response.UploadUrl, nil
 }
 
-func (r *vkRepository) Upload(url string, photos ...*entity.Photo) error {
+func (r *vkRepository) Upload(url, token string, photos ...*entity.Photo) error {
 	b := &bytes.Buffer{}
 	writer := multipart.NewWriter(b)
 
@@ -130,7 +119,7 @@ func (r *vkRepository) Upload(url string, photos ...*entity.Photo) error {
 		return err
 	}
 
-	err = r.savePhoto(msg.Aid, msg.Server, msg.Photos_list, msg.Hash)
+	err = r.savePhoto(msg.Aid, msg.Server, msg.Photos_list, msg.Hash, token)
 
 	if err != nil {
 		return err
@@ -139,19 +128,19 @@ func (r *vkRepository) Upload(url string, photos ...*entity.Photo) error {
 	return nil
 }
 
-func (r *vkRepository) DeleteAlbum(title string) error {
-	id, err := r.getAlbumId(title)
+func (r *vkRepository) DeleteAlbum(title, token string) error {
+	id, err := r.getAlbumId(title, token)
 	if err != nil {
 		return err
 	}
 
-	http.Get(fmt.Sprintf("https://api.vk.com/method/photos.deleteAlbum?album_id=%d&access_token=%s&v=5.199", id, r.token))
+	http.Get(fmt.Sprintf("https://api.vk.com/method/photos.deleteAlbum?album_id=%d&access_token=%s&v=5.199", id, token))
 
 	return nil
 }
 
-func (r *vkRepository) savePhoto(aid, server int, photos_list, hash string) error {
-	resp, err := http.Get(fmt.Sprintf("https://api.vk.com/method/photos.save?album_id=%d&server=%d&photos_list=%s&hash=%s&access_token=%s&v=5.199", aid, server, photos_list, hash, r.token))
+func (r *vkRepository) savePhoto(aid, server int, photos_list, hash, token string) error {
+	resp, err := http.Get(fmt.Sprintf("https://api.vk.com/method/photos.save?album_id=%d&server=%d&photos_list=%s&hash=%s&access_token=%s&v=5.199", aid, server, photos_list, hash, token))
 	if err != nil {
 		return err
 	}
@@ -175,16 +164,8 @@ func (r *vkRepository) savePhoto(aid, server int, photos_list, hash string) erro
 	return nil
 }
 
-func (r *vkRepository) SetToken(token string) {
-	r.token = token
-}
-
-func (r *vkRepository) SetId(id int) {
-	r.id = id
-}
-
-func (r *vkRepository) getAlbumId(title string) (int, error) {
-	resp, err := http.Get(fmt.Sprintf("https://api.vk.com/method/photos.getAlbums?access_token=%s&v=5.199", r.token))
+func (r *vkRepository) getAlbumId(title, token string) (int, error) {
+	resp, err := http.Get(fmt.Sprintf("https://api.vk.com/method/photos.getAlbums?access_token=%s&v=5.199", token))
 	if err != nil {
 		return 0, errors.New("нельзя получить информацию о альбомах VK")
 	}
