@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"sync"
+	"time"
 	"vk-photo-uploader/internal/entity"
 	"vk-photo-uploader/internal/service"
 
@@ -13,11 +15,13 @@ import (
 
 type PhotoHandler struct {
 	photoService service.PhotoService
+	wg           *sync.WaitGroup
 }
 
-func NewPhotoHandler(router *gin.Engine, photoService service.PhotoService) {
+func NewPhotoHandler(router *gin.Engine, photoService service.PhotoService, wg *sync.WaitGroup) {
 	handler := &PhotoHandler{
 		photoService: photoService,
+		wg:           wg,
 	}
 
 	router.POST("/uploader/upload", handler.Upload)
@@ -47,23 +51,35 @@ func (p *PhotoHandler) Upload(c *gin.Context) {
 		}
 	}
 
-	if err := p.photoService.UploadPhotos(photos, token); err != nil {
-		log.Printf("Ошибка загрузки файлов: %v", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка загрузки файлов"})
-		return
-	}
+	p.wg.Add(1)
+	go func() {
+		defer p.wg.Done()
+		time.Sleep(5 * time.Second)
+		if err := p.photoService.UploadPhotos(photos, token); err != nil {
+			log.Printf("Ошибка загрузки файлов: %v", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка загрузки файлов"})
+			return
+		}
 
-	c.JSON(http.StatusOK, gin.H{"status": "Фотографии загружена"})
+		c.JSON(http.StatusOK, gin.H{"status": "Фотографии загружена"})
+	}()
+
 }
 
 func (p *PhotoHandler) Delete(c *gin.Context) {
 	folderName := c.Query("foldername")
 	token, _ := c.Cookie("vk_token")
-	if err := p.photoService.DeleteFolder(folderName, token); err != nil {
-		log.Printf("Ошибка удаления папки: %v", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка удаления папки"})
-		return
-	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "Папка удалена"})
+	p.wg.Add(1)
+	go func() {
+		p.wg.Done()
+
+		if err := p.photoService.DeleteFolder(folderName, token); err != nil {
+			log.Printf("Ошибка удаления папки: %v", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка удаления папки"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"status": "Папка удалена"})
+	}()
 }

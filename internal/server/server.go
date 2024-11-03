@@ -23,7 +23,11 @@ func NewServer(cfg *infrastructure.Config, handler http.Handler) *Server {
 }
 
 func (s *Server) Run() error {
-	return s.httpServer.ListenAndServe()
+	err := s.httpServer.ListenAndServe()
+	if err != http.ErrServerClosed {
+		return err
+	}
+	return nil
 }
 
 func (s *Server) Stop() error {

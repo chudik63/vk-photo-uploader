@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sync"
+	"syscall"
 	"vk-photo-uploader/internal/delivery/http"
 	"vk-photo-uploader/internal/delivery/http/middleware"
 	"vk-photo-uploader/internal/infrastructure"
@@ -15,6 +17,8 @@ import (
 )
 
 func Run(cfg *infrastructure.Config) {
+	var wg sync.WaitGroup
+
 	router := gin.Default()
 
 	router.Use(middleware.AuthMiddleware())
@@ -25,7 +29,7 @@ func Run(cfg *infrastructure.Config) {
 
 	http.NewPageHandler(router)
 	http.NewUserHandler(router)
-	http.NewPhotoHandler(router, photoService)
+	http.NewPhotoHandler(router, photoService, &wg)
 
 	srv := server.NewServer(cfg, router.Handler())
 
@@ -36,11 +40,15 @@ func Run(cfg *infrastructure.Config) {
 	}()
 
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
 	<-quit
 
 	if err := srv.Stop(); err != nil {
 		log.Printf("Ошибка остановки сервера: %v", err)
 	}
+
+	wg.Wait()
+
+	log.Print("Сервер остановлен")
 }
