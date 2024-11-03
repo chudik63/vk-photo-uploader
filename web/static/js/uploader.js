@@ -52,7 +52,7 @@ function handleFolderSelection(event) {
     folderList.insertBefore(folderClone, addFolderBtnNode);
 
     trashBtn.addEventListener('click', async () => {
-        const response = await fetch(`/uploader/delete?foldername=${folderName}`, {
+        const response = await fetch(`/photos?foldername=${folderName}`, {
             method: 'DELETE',
         }); 
 
@@ -94,7 +94,7 @@ function handleFolderSelection(event) {
             listItems.push(listItem)
             
             if ((i + 1) % 5 === 0 || i === folder.files.length - 1) {
-                const response = await fetch (`/uploader/upload?folder=${folder.name}&count=${count}`, {
+                const response = await fetch (`/photos?folder=${folder.name}&count=${count}`, {
                     method: 'POST',
                     body: formData,
                 });

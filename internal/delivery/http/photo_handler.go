@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
-	"time"
 	"vk-photo-uploader/internal/entity"
 	"vk-photo-uploader/internal/service"
 
@@ -24,8 +23,8 @@ func NewPhotoHandler(router *gin.Engine, photoService service.PhotoService, wg *
 		wg:           wg,
 	}
 
-	router.POST("/uploader/upload", handler.Upload)
-	router.DELETE("/uploader/delete", handler.Delete)
+	router.POST("/photos", handler.Upload)
+	router.DELETE("/photos", handler.Delete)
 }
 
 func (p *PhotoHandler) Upload(c *gin.Context) {
@@ -54,7 +53,7 @@ func (p *PhotoHandler) Upload(c *gin.Context) {
 	p.wg.Add(1)
 	go func() {
 		defer p.wg.Done()
-		time.Sleep(5 * time.Second)
+
 		if err := p.photoService.UploadPhotos(photos, token); err != nil {
 			log.Printf("Ошибка загрузки файлов: %v", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка загрузки файлов"})
