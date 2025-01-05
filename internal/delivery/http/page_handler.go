@@ -15,8 +15,8 @@ type PageHandler struct {
 
 func NewPageHandler(router *gin.Engine) {
 	handler := &PageHandler{
-		staticFolder:    "../web/static",
-		templatesFolder: "../web/templates",
+		staticFolder:    "./web/static",
+		templatesFolder: "./web/templates",
 		authPage:        "auth.html",
 		uploaderPage:    "index.html",
 	}
