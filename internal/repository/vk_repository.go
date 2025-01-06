@@ -30,10 +30,10 @@ func NewVkRepository() PhotoRepository {
 
 func (r *vkRepository) CreateAlbum(title, token string) (int, error) {
 	r.mu.Lock()
+	defer r.mu.Unlock()
 
 	id, err := r.getAlbumId(title, token)
 	if err == nil {
-		r.mu.Unlock()
 		return id, nil
 	}
 
@@ -53,8 +53,6 @@ func (r *vkRepository) CreateAlbum(title, token string) (int, error) {
 	if err != nil {
 		return 0, errors.New("ошибка чтения JSON после создании альбома")
 	}
-
-	r.mu.Unlock()
 
 	return msg.Response.Id, nil
 }
