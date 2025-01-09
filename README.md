@@ -7,7 +7,7 @@ Run:
 git clone github.com/chudik63/vk-photo-uploader
 cd vk-photo-uploader
 docker build -t uploader .
-docker run uploader
+docker run -p 80:80 uploader
 ``` 
 
 Then go to localhost:80 and enjoy
