@@ -14,4 +14,10 @@ FROM alpine:latest
 
 COPY --from=build /build/uploader .
 
+COPY --from=build /build/web ./web
+
+ENV SERVER_PORT=80
+
+EXPOSE 80
+
 CMD ["./uploader"]
