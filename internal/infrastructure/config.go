@@ -7,9 +7,7 @@ import (
 )
 
 type Config struct {
-	Server struct {
-		Port string
-	}
+	ServerPort string `env:"SERVER_PORT"`
 }
 
 func LoadConfig() (*Config, error) {
