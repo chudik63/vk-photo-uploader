@@ -13,7 +13,7 @@ type Config struct {
 func LoadConfig() (*Config, error) {
 	cfg := Config{}
 
-	err := cleanenv.ReadEnv(&cfg)
+	err := cleanenv.ReadConfig("./configs/.env", &cfg)
 
 	if cfg == (Config{}) {
 		return nil, errors.New("конфиг пустой")
