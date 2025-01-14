@@ -1,5 +1,5 @@
 # Utility for conveniently uploading
-This app allows you to upload folders with photos from your computer to a VK profile, automatically creating albums with the folder names.
+This app allows you to upload folders with photos from your computer to a VK profile, automatically creating albums with the folders' names.
 
 # How to use it
 Run:
