@@ -98,7 +98,7 @@ function handleFolderSelection(event) {
             listItem.textContent = folder.files[i].name;
             listItems.push(listItem)
             
-            if ((i + 1) % 5 === 0 || i === length - 1) {
+            if ((i + 1) % 5 === 0 || i === folder.files.length - 1) {
                 const response = await fetch (`/photos?folder=${folder.name}&count=${count}`, {
                     method: 'POST',
                     body: formData,
