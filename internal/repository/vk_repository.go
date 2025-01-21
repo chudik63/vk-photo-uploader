@@ -8,6 +8,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"sync"
 	"vk-photo-uploader/internal/entity"
 	"vk-photo-uploader/internal/repository/responses"
@@ -36,6 +37,8 @@ func (r *vkRepository) CreateAlbum(title, token string) (int, error) {
 	if err == nil {
 		return id, nil
 	}
+
+	title = url.QueryEscape(title)
 
 	resp, err := http.Get(fmt.Sprintf("https://api.vk.com/method/photos.createAlbum?title=%s&access_token=%s&v=5.199", title, token))
 	if err != nil {
