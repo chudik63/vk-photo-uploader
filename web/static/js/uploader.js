@@ -85,6 +85,10 @@ function handleFolderSelection(event) {
         let count = 0;
 
         for (let i = 0; i < folder.files.length; i++) {
+            if (!folder.files[i].type.startsWith('image/')) {
+                continue
+            }
+
             count++;
 
             formData.append(`file${count}`, folder.files[i]);
