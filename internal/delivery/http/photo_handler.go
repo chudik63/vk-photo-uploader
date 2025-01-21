@@ -28,6 +28,9 @@ func NewPhotoHandler(router *gin.Engine, photoService service.PhotoService, wg *
 }
 
 func (p *PhotoHandler) Upload(c *gin.Context) {
+	p.wg.Add(1)
+	defer p.wg.Done()
+
 	count, _ := strconv.Atoi(c.Query("count"))
 	folder := c.Query("folder")
 	token, _ := c.Cookie("vk_token")
@@ -50,35 +53,27 @@ func (p *PhotoHandler) Upload(c *gin.Context) {
 		}
 	}
 
-	p.wg.Add(1)
-	go func() {
-		defer p.wg.Done()
+	if err := p.photoService.UploadPhotos(photos, token); err != nil {
+		log.Printf("Ошибка загрузки файлов: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка загрузки файлов"})
+		return
+	}
 
-		if err := p.photoService.UploadPhotos(photos, token); err != nil {
-			log.Printf("Ошибка загрузки файлов: %v", err)
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка загрузки файлов"})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"status": "Фотографии загружена"})
-	}()
-
+	c.JSON(http.StatusOK, gin.H{"status": "Фотографии загружена"})
 }
 
 func (p *PhotoHandler) Delete(c *gin.Context) {
+	p.wg.Add(1)
+	defer p.wg.Done()
+
 	folderName := c.Query("foldername")
 	token, _ := c.Cookie("vk_token")
 
-	p.wg.Add(1)
-	go func() {
-		p.wg.Done()
+	if err := p.photoService.DeleteFolder(folderName, token); err != nil {
+		log.Printf("Ошибка удаления папки: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка удаления папки"})
+		return
+	}
 
-		if err := p.photoService.DeleteFolder(folderName, token); err != nil {
-			log.Printf("Ошибка удаления папки: %v", err)
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка удаления папки"})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"status": "Папка удалена"})
-	}()
+	c.JSON(http.StatusOK, gin.H{"status": "Папка удалена"})
 }

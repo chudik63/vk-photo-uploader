@@ -80,11 +80,13 @@ func (r *vkRepository) GetUploadServer(id int, token string) (string, error) {
 	return msg.Response.UploadUrl, nil
 }
 
-func (r *vkRepository) Upload(url, token string, photos ...*entity.Photo) error {
+func (r *vkRepository) Upload(uploadUrl, token string, photos ...*entity.Photo) error {
 	b := &bytes.Buffer{}
 	writer := multipart.NewWriter(b)
 
 	for i, photo := range photos {
+		photo.Name = url.QueryEscape(photo.Name)
+
 		part, err := writer.CreateFormFile(fmt.Sprintf("file%d", i+1), photo.Name)
 		if err != nil {
 			return err
@@ -97,7 +99,7 @@ func (r *vkRepository) Upload(url, token string, photos ...*entity.Photo) error 
 		writer.Close()
 	}
 
-	req, err := http.NewRequest("POST", url, b)
+	req, err := http.NewRequest("POST", uploadUrl, b)
 	if err != nil {
 		return err
 	}
