@@ -18,4 +18,8 @@ WORKDIR /root/
 
 COPY --from=build /build/uploader .
 
+COPY --from=build /build/configs ./configs
+
+COPY --from=build /build/web ./web
+
 CMD ["./uploader"]
