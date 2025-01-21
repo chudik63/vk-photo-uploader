@@ -17,7 +17,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		_, err := c.Cookie("vk_token")
 
 		if err == http.ErrNoCookie {
-			c.Redirect(http.StatusFound, "/auth")
+			c.Redirect(http.StatusUnauthorized, "/auth")
 			c.Abort()
 			return
 		}
